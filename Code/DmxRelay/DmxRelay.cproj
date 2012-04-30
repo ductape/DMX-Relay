@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>5.1</ProjectVersion>
+    <ToolchainName>com.Atmel.AVRGCC8</ToolchainName>
+    <ProjectGuid>{ef381467-4f3d-426f-8729-ae32de5c212a}</ProjectGuid>
+    <avrdevice>ATmega168A</avrdevice>
+    <avrdeviceseries>none</avrdeviceseries>
+    <OutputType>Executable</OutputType>
+    <Language>C</Language>
+    <OutputFileName>$(MSBuildProjectName)</OutputFileName>
+    <OutputFileExtension>.elf</OutputFileExtension>
+    <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
+    <AssemblyName>DmxRelay</AssemblyName>
+    <Name>DmxRelay</Name>
+    <RootNamespace>DmxRelay</RootNamespace>
+    <ToolchainFlavour>Native</ToolchainFlavour>
+    <AsfVersion>2.11.1</AsfVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <ToolchainSettings>
+      <AvrGcc>
+        <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
+        <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
+        <avrgcc.compiler.optimization.level>Optimize for size (-Os)</avrgcc.compiler.optimization.level>
+        <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
+        <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
+        <avrgcc.compiler.optimization.DebugLevel>None</avrgcc.compiler.optimization.DebugLevel>
+        <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
+        <avrgcc.linker.libraries.Libraries>
+          <ListValues>
+            <Value>m</Value>
+          </ListValues>
+        </avrgcc.linker.libraries.Libraries>
+      </AvrGcc>
+    </ToolchainSettings>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <ToolchainSettings>
+      <AvrGcc>
+  <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
+  <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
+  <avrgcc.compiler.directories.IncludePaths>
+    <ListValues>
+      <Value>../Source/Drivers/Micro</Value>
+    </ListValues>
+  </avrgcc.compiler.directories.IncludePaths>
+  <avrgcc.compiler.optimization.level>Optimize (-O1)</avrgcc.compiler.optimization.level>
+  <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
+  <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
+  <avrgcc.compiler.optimization.DebugLevel>Default (-g2)</avrgcc.compiler.optimization.DebugLevel>
+  <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
+  <avrgcc.linker.libraries.Libraries>
+    <ListValues>
+      <Value>m</Value>
+    </ListValues>
+  </avrgcc.linker.libraries.Libraries>
+  <avrgcc.assembler.debugging.DebugLevel>Default (-g2)</avrgcc.assembler.debugging.DebugLevel>
+</AvrGcc>
+    </ToolchainSettings>
+  </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Include" />
+    <Folder Include="Source" />
+    <Folder Include="Source\Appication" />
+    <Folder Include="Source\Drivers" />
+    <Folder Include="Source\Drivers\Micro" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Source\Appication\Main.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\Drivers\Micro\Cpu.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\Drivers\Micro\Cpu.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\Drivers\Micro\Gpio.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\Drivers\Micro\Gpio.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\Drivers\Micro\Serial.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\Drivers\Micro\Serial.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\Drivers\Micro\Timer.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\Drivers\Micro\Timer.h">
+      <SubType>compile</SubType>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
+</Project>
