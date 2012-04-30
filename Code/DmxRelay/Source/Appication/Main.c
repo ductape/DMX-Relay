@@ -20,7 +20,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdbool.h>
-#include "Serial.h"
+#include "Uart.h"
 #include "Cpu.h"
 #include "Gpio.h"
 #include "Timer.h"
