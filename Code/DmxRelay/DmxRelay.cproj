@@ -66,9 +66,29 @@
     <Folder Include="Source\Appication" />
     <Folder Include="Source\Drivers" />
     <Folder Include="Source\Drivers\Micro" />
+    <Folder Include="Source\Components" />
+    <Folder Include="Source\Utilities" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Source\Appication\Application.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\Appication\Application.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="Source\Appication\Main.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\Appication\Startup.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\Appication\Startup.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\Components\Dmx.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\Components\Dmx.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Source\Drivers\Micro\Cpu.c">
@@ -83,16 +103,22 @@
     <Compile Include="Source\Drivers\Micro\Gpio.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Source\Drivers\Micro\Serial.c">
+    <Compile Include="Source\Drivers\Micro\Uart.c">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Source\Drivers\Micro\Serial.h">
+    <Compile Include="Source\Drivers\Micro\Uart.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Source\Drivers\Micro\Timer.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Source\Drivers\Micro\Timer.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\Utilities\CircularBuffer.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\Utilities\CircularBuffer.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>
