@@ -1,2 +1,2 @@
 This project is based on a ATmega168A microcontroller and will recieve DMX communication to control standard mechanical
-relays. The goal is that it will be modified over time to be uC independent and can be ported to many other projects. 
+relays. 
