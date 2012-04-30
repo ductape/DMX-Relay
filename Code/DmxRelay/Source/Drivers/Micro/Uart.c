@@ -7,7 +7,7 @@
 
 /** INCLUDES */
 #include <avr/io.h>
-#include "Serial.h"
+#include "Uart.h"
 
 void SerialInit(void)
 {
