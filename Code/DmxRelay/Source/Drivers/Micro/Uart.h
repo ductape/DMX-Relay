@@ -1,20 +1,31 @@
-/*
- * Utilities.h
- *
- * Created: 2/19/2012 8:33:12 PM
- *  Author: Shaun
- */ 
+/** \file Uart.h
+    \brief Header file for the hardware UART driver
+
+    \details Defines the configuration and accessor functions for the serial UART port
+ */
 
 
 #ifndef UTILITIES_H_
 #define UTILITIES_H_
 
+/**** PUBLIC DEFINITIONS ****/
 #define RECEIVE_INTERRUPT
 
-void SerialInit(void); 
-void SerialWriteByte( uint8_t byte ); 
-void SerialWriteString( uint8_t* string ); 
-void SerialPrintInt(int16_t number); 
+/** Structure to hold the received UART information */
+typedef struct RxData
+{
+	volatile uint8_t data;
+	volatile uint8_t statusByte;
+} 	RxData_t;
+
+/**** PUBLIC FUNCTION PROTOTYPES ****/
+void SerialInit(void);
+
+bool SerialReadByte( RxData_t *rxData );
+
+void SerialWriteByte( uint8_t byte );
+void SerialWriteString( uint8_t* string );
+void SerialPrintInt(int16_t number);
 
 
 

@@ -42,23 +42,8 @@ uint8_t ShiftCharacter(uint8_t character)
 	return newValue;
 }
 
-/** RxData is a structure that will hold the information received from the serial port. */
-typedef struct
-{
-	volatile bool received;         /** ??? */
-	volatile uint8_t statusByte;    /** The status byte with error codes from the UART */
-	uint8_t data;                   /** The actual data recieved from the UART */
-} RxData;
-
-RxData rxData;
-volatile uint8_t rx;
-
-ISR(USART_RX_vect)
-{
-	rxData.received = true;
-	rxData.statusByte = UCSR0A;
-	rxData.data = UDR0;
-}
+/** Define a variable to hold the serial data */
+RxData_t rxData;
 
 int main (void)
 {
@@ -73,10 +58,8 @@ int main (void)
 
 	while (1) {
 
-		if (rxData.received)
+		if (SerialReadByte(&rxData))
 		{
-            rx = rxData.data;
-			rxData.received= false;
             channel++;
 
             #ifdef DEBUG
@@ -102,9 +85,9 @@ int main (void)
                 #endif
 
                 #ifdef PC_MODE
-                if(rx > 96)
+                if(rxData.data > 96)
                 #else
-                if(rx > 128)
+                if(rxData.data > 128)
                 #endif
                 {
                     switch(channel)
