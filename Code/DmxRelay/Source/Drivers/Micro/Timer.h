@@ -9,7 +9,11 @@
 #ifndef TIMER_H_
 #define TIMER_H_
 
-/**** DEFINES ****/
+/**** PUBLIC DEFINITIONS ****/
+
+/**** PUBLIC VARIABLES ****/
+static volatile bool newTick = false;
+static volatile uint8_t tickCount = 0;
 
 /**** DECLARATIONS ****/
 void TimerInit(void);

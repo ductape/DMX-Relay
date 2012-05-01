@@ -5,8 +5,9 @@
  *  Author: Shaun
  */
 
-#include "Timer.h";
 #include <avr/io.h>
+#include <stdbool.h>
+#include "Timer.h"
 #include <avr/interrupt.h>
 #include "Gpio.h"
 
@@ -37,18 +38,18 @@ void TimerInit(void)
 
 ISR(TIMER0_COMPA_vect)
 {
-	static uint8_t tickCounter = 0; 
-	
+    newTick = true;
+
 	/* For 8 msec tick, 1sec = 125
 	   ticks so reset every 2 seconds
 	*/
-	if( ++tickCounter > 250 )
+	if( ++tickCount > 250 )
 	{
-		tickCounter = 0; 
+		tickCount = 0;
 	}
-	
-	if (tickCounter % 62 == 0)
+
+	if (tickCount % 62 == 0)
 	{
-		TOGGLE_LED0; 
+		TOGGLE_LED0;
 	}
 }
