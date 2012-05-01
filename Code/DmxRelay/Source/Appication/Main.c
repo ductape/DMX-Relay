@@ -33,16 +33,17 @@ RxData_t rxData;
 /**** LOCAL FUNCTIONS ****/
 int main (void)
 {
+	volatile int16_t channel = 0; // the active dmx channel
+	uint8_t dmxChannel[NUM_CHAN];
+	
 	CpuConfig();
 	GpioInit();
 	TimerInit();
 	SerialInit();
-	sei();
-
-	volatile int16_t channel = 0; // the active dmx channel
-	uint8_t dmxChannel[NUM_CHAN];
-
+	
     RunStartup(); 
+	
+	sei();
 
 	while (1) {
 
