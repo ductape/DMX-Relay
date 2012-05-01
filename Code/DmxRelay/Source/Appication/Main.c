@@ -6,7 +6,16 @@
              and will accept a DMX signal as serial input and output the
              DMX channel on relays.
 */
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <stdbool.h>
+#include "Uart.h"
+#include "Cpu.h"
+#include "Gpio.h"
+#include "Timer.h"
+#include "Startup.h"
 
+/**** LOCAL DEFINITIONS ****/
 #define NUM_CHAN 9
 #define START_CHAN 1
 
@@ -16,35 +25,12 @@
 
 /* define debug to print the output to the terminal */
 //#define DEBUG
-
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <stdbool.h>
-#include "Uart.h"
-#include "Cpu.h"
-#include "Gpio.h"
-#include "Timer.h"
-
-uint8_t ShiftCharacter(uint8_t character)
-{
-	uint8_t newValue;
-	switch(character)
-	{
-		case 0x0D:  // carriage return
-			newValue = 0x0A; // use line feed (with implicit CR
-			break;
-
-		default:
-			newValue = character + 1;
-			break;
-	}
-
-	return newValue;
-}
+/**** LOCAL VARIABLES ****/
 
 /** Define a variable to hold the serial data */
 RxData_t rxData;
 
+/**** LOCAL FUNCTIONS ****/
 int main (void)
 {
 	CpuConfig();
@@ -55,6 +41,8 @@ int main (void)
 
 	volatile int16_t channel = 0; // the active dmx channel
 	uint8_t dmxChannel[NUM_CHAN];
+
+    RunStartup(); 
 
 	while (1) {
 
