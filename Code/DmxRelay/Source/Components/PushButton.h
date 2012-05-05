@@ -10,22 +10,28 @@
 #define PUSHBUTTON_H_
 
 /**** PUBLIC DEFINITIONS ****/
+typedef enum PushButton
+{
+	PushButton_None = 0x00,
+	PushButton_0    = 0x01,
+	PushButton_1    = 0x02,
+	PushButton_2    = 0x04,
+	PushButton_3    = 0x08
+} PushButton_t;
 
 /**** PUBLIC VARIABLES ****/
-static volatile bool pb0_pressed = false;
-static volatile bool pb1_pressed = false;
-static volatile bool pb2_pressed = false;
-static volatile bool pb3_pressed = false;
 
-static volatile bool pb0_released = false;
-static volatile bool pb1_released = false;
-static volatile bool pb2_released = false;
-static volatile bool pb3_released = false;
+/** Stores the current "pressed" state of the push buttons. Never write to this
+    variable outside of this module. */
+extern uint8_t PushButtons;
 
-static volatile bool pb0_state = false;
-static volatile bool pb1_state = false;
-static volatile bool pb2_state = false;
-static volatile bool pb3_state = false;
+/** Stores when the buttons have been pressed. Always clear this variable after
+    reading it so that the press will be unlatched */
+extern uint8_t PushButtonsPressed;
+
+/** Stores when the buttons have been released. Always clear this variable after
+    reading it so that the release will be unlatched */
+extern uint8_t PushButtonsReleased;
 
 /**** PUBLIC FUNCTION PROTOTYPES ****/
 void CheckPushButtons( void );

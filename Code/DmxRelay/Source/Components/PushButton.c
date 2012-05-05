@@ -6,22 +6,22 @@
 */
 
 #include <stdbool.h>
+#include <avr/io.h>
 #include "PushButton.h"
 #include <Gpio.h>
-#include <avr/io.h>
+
+/**** PUBLIC VARIABLES ****/
+uint8_t PushButtons = PushButton_None;
+uint8_t PushButtonsPressed = PushButton_None;
+uint8_t PushButtonsReleased = PushButton_None;
 
 /**** LOCAL DEFINITIONS ****/
 
 /**** LOCAL VARIABLES ****/
 /** Declare local variables to hold the previous button state information for debouncing */
-static volatile bool _pb0_previous = false;
-static volatile bool _pb1_previous = false;
-static volatile bool _pb2_previous = false;
-static volatile bool _pb3_previous = false;
+static volatile uint8_t _previousPushButtons = 0x00;
 
 /**** LOCAL FUNCTION PROTOTYPES ****/
-bool _IsPressed(bool current, bool previous);
-bool _IsReleased(bool current, bool previous);
 
 /**** LOCAL FUNCTION DEFINITIONS ****/
 /**
@@ -29,79 +29,26 @@ bool _IsReleased(bool current, bool previous);
 */
 void CheckPushbuttons(void)
 {
-    volatile bool pb0 = READ_BUTTON0;
-	volatile bool pb1 = READ_BUTTON1;
-	volatile bool pb2 = READ_BUTTON2;
-	volatile bool pb3 = READ_BUTTON3;
+    volatile uint8_t currentPushButtons = PushButton_None;
 
-    pb0_pressed = _IsPressed(pb0, _pb0_previous); 
-	if (pb0_pressed)
-	{
-		pb0_state = true; 
-	}		
-	pb1_pressed = _IsPressed(pb1, _pb1_previous); 
-	if (pb1_pressed)
-	{
-		pb1_state = true; 
-	}
-	pb2_pressed = _IsPressed(pb2, _pb2_previous); 
-	if (pb2_pressed)
-	{
-		pb2_state = true; 
-	}
-	pb3_pressed = _IsPressed(pb3, _pb3_previous); 
-    if (pb3_pressed)
-	{
-		pb3_state = true; 
-	}
-	
-	pb0_released = _IsReleased(pb0, _pb0_previous); 
-	if (pb0_released)
-	{
-		pb0_state = false; 
-	}		
-	pb1_released = _IsReleased(pb1, _pb1_previous); 
-	if (pb1_released)
-	{
-		pb1_state = false; 
-	}
-	pb2_released = _IsReleased(pb2, _pb2_previous); 
-	if (pb2_released)
-	{
-		pb2_state = false; 
-	}
-	pb3_released = _IsReleased(pb3, _pb3_previous); 
-    if (pb3_released)
-	{
-		pb3_state = false; 
-	}	
-	
-	_pb0_previous = pb0;
-	_pb1_previous = pb1;
-	_pb2_previous = pb2;
-	_pb3_previous = pb3;
-}
+    /* get the current state of the push buttons */
+	currentPushButtons |= READ_BUTTON0 ? PushButton_0 : PushButton_None;
+	currentPushButtons |= READ_BUTTON1 ? PushButton_1 : PushButton_None;
+	currentPushButtons |= READ_BUTTON2 ? PushButton_2 : PushButton_None;
+	currentPushButtons |= READ_BUTTON3 ? PushButton_3 : PushButton_None;
 
-bool _IsPressed(bool current, bool previous)
-{
-	bool isPressed = false;
+    /* if the button state has changed and the current state is pressed, then the button was just pressed */
+    PushButtonsPressed = (currentPushButtons ^ _previousPushButtons) & currentPushButtons;
+    /* if the button was pressed, store the current state as pressed. Only changing this on press and release
+       ensures that the button state is always in agreement with the debouncing */
+	PushButtons |= PushButtonsPressed;
 
-	if ((current == true) && (previous == false))
-	{
-		isPressed = true;
-	}
+	/* if the button state has changed and the previous state is pressed, then the button was just released */
+	PushButtonsReleased = (currentPushButtons ^ _previousPushButtons) & _previousPushButtons;
+	/* if the button was released, store the current state as released. Only changing this on press and release
+       ensures that the button state is always in agreement with the debouncing */
+	PushButtons &= ~PushButtonsReleased;
 
-	return isPressed;
-}
-
-bool _IsReleased(bool current, bool previous)
-{
-	bool isReleased = false;
-
-	if ((current == false) && (previous == true))
-	{
-		isReleased = true;
-	}
-
-	return isReleased;
+	/* store the current state as the previous for next time */
+	_previousPushButtons = currentPushButtons;
 }
