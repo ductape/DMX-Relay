@@ -14,6 +14,7 @@
 #include "Gpio.h"
 #include "Timer.h"
 #include "Startup.h"
+#include "Application.h"
 
 /**** LOCAL DEFINITIONS ****/
 #define NUM_CHAN 9
@@ -35,17 +36,19 @@ int main (void)
 {
 	volatile int16_t channel = 0; // the active dmx channel
 	uint8_t dmxChannel[NUM_CHAN];
-	
+
 	CpuConfig();
 	GpioInit();
 	TimerInit();
 	SerialInit();
-	
-    RunStartup(); 
-	
+
+    RunStartup();
+
 	sei();
 
-	while (1) {
+	while (1)
+	{
+        ProcessEvents();
 
 		if (SerialReadByte(&rxData))
 		{

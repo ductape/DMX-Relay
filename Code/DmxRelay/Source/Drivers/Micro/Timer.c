@@ -8,24 +8,31 @@
 #include "ProjectTypes.h"
 #include "Timer.h"
 #include <avr/interrupt.h>
-#include "Gpio.h"
 #include "EventQueue.h"
 
 /**** LOCAL DEFINITIONS ****/
 
-/** Defines the number of timer ticks (interrupts) per 64 ms */
-#define TICKS_PER_64MS 8u
+/** Defines the number of timer ticks (interrupts) per 40 ms */
+#define TICKS_PER_40MS 5u
+
+/** Defines the number of timer ticks (interrupts) per 200 ms */
+#define TICKS_PER_200MS 25u
 
 /** Defines the number of timer ticks (interrupts per 1 s */
-#define TICKS_PER_1S 125u
+#define TICKS_PER_1S 0u
 
 /**** LOCAL CONSTANTS ****/
 static const Event_t EVENT_8MS  = {EventType_8ms,  0u};
-static const Event_t EVENT_64MS = {EventType_64ms, 0u};
+static const Event_t EVENT_40MS = {EventType_40ms, 0u};
+static const Event_t EVENT_200MS = {EventType_200ms, 0u};
 static const Event_t EVENT_1S   = {EventType_1s,   0u};
 
 /**** LOCAL VARIABLES ****/
+/** Is set each time that the timer ticks. */
+static volatile bool ticked = false;
 
+/** Keeps count of the number of timer ticks */
+static volatile uint8_t tickCount = 0u;
 /**** LOCAL FUNCTION DECLARATIONS ****/
 
 /**** FUNCTION DEFINITIONS ****/
@@ -39,15 +46,16 @@ void TimerInit(void)
 	TCCR0A = 0x02;
 
 	/* Don't set any of the force compare bits and
-	   set the clock divider to be clock/1024
-	   giving a 15.625KHz period with at 16MHz clock
+	   set the clock divider to be clock/256
+	   giving a 31.250KHz period with at 8MHz clock
 	*/
-	TCCR0B = 0x05;
+	TCCR0B = 0x04;
 
 	/* Set the compare to give a 8 msec tick
 	   0x7D = 125 and 125 / 15625 = 0.008 seconds
 	*/
-	OCR0A = 0x7D;
+	//OCR0A = 0x7D;
+	OCR0A = 250u;
 
 	/* Enable interrupts for the Timer 0 output
 	   compare A match
@@ -55,31 +63,41 @@ void TimerInit(void)
 	TIMSK0 = 0x02;
 }
 
+void ProcessTick(void)
+{
+	if (ticked)
+	{
+		/* clear the tick flag */
+		ticked = false;
+		
+        /* with an 8ms tick, enqueue an event every tick */
+        EnqueueEvent(&EVENT_8MS);
+
+	    if ((tickCount % TICKS_PER_40MS) == 0)
+	    {
+            EnqueueEvent(&EVENT_40MS);
+	    }
+
+	    if ((tickCount % TICKS_PER_200MS) == 0)
+	    {
+            EnqueueEvent(&EVENT_200MS);
+	    }
+
+        /* no modulo here because the tick counter rolls over at 1s */
+        if (tickCount == TICKS_PER_1S)
+	    {
+		    EnqueueEvent(&EVENT_1S);
+	    }
+
+        /* reset the tick counter at 125 so that it resets once per second */
+	    if(++tickCount >= 125)
+	    {
+		    tickCount = 0u;
+	    }
+	}
+}
+
 ISR(TIMER0_COMPA_vect)
 {
-	static uint8_t tickCount = 0u;
-	static uint8_t last64ms  = 0u;
-	static uint8_t last1s    = 0u;
-
-    EnqueueEvent(&EVENT_8MS);
-
-	/* For 8 msec tick, 1sec = 125 ticks */
-	if ((tickCount - last64ms) % TICKS_PER_64MS)
-	{
-        EnqueueEvent(&EVENT_64MS);
-		last64ms = tickCount;
-	}
-
-    if ((tickCount - last1s) % TICKS_PER_1S)
-	{
-		EnqueueEvent(&EVENT_1S);
-		last1s = tickCount;
-	}
-
-	if (tickCount % 62 == 0)
-	{
-		TOGGLE_LED0;
-	}
-	
-	tickCount++; 
+    ticked = true;
 }

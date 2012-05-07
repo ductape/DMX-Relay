@@ -17,7 +17,8 @@ typedef enum EventType
 	EventType_Invalid = -1,
 	EventType_First   = 0,
     EventType_8ms     = EventType_First,
-	EventType_64ms,
+	EventType_40ms,
+	EventType_200ms,
 	EventType_1s,
 	EventType_Last
 } EventType_t;

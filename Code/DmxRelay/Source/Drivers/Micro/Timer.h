@@ -15,7 +15,7 @@
 
 /**** DECLARATIONS ****/
 void TimerInit(void);
-
+void ProcessTick(void);
 
 
 #endif /* TIMER_H_ */
