@@ -1,0 +1,9 @@
+# ignore directories named Debug because they are generated code and not checked in
+Debug/
+
+# also ignore the AVR Studio generated files
+*.atsln
+*.atsuo
+
+# ignore the log file
+Code/*.csv
