@@ -24,8 +24,9 @@ void SerialInit(void);
 bool SerialReadByte( RxData_t *rxData );
 
 void SerialWriteByte( uint8_t byte );
-void SerialWriteString( uint8_t* string );
-void SerialPrintInt(int16_t number);
+void SerialWriteChar( char character);
+void SerialWriteString( char* string );
+void SerialWriteHexByte( uint8_t byte );
 
 
 

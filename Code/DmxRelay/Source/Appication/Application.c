@@ -10,6 +10,8 @@
 #include "EventQueue.h"
 #include "Gpio.h"
 #include "Timer.h"
+#include "PushButton.h"
+#include "Led.h"
 
 /**** PUBLIC VARIABLES ****/
 
@@ -18,7 +20,7 @@
 /**** LOCAL CONSTANTS ****/
 
 /**** LOCAL VARIABLES ****/
-Event_t eventToProcess = {EventType_Invalid, 0u};
+Event_t _eventToProcess = {EventType_Invalid, 0u};
 /**** LOCAL FUNCTION DECLARATIONS ****/
 
 /**** FUNCTION DEFINITIONS ****/
@@ -31,23 +33,32 @@ void ProcessEvents(void)
 	ProcessTick();
 
 	/* check if there is an event to process */
-    receivedEvent = DequeueEvent(&eventToProcess);
+    receivedEvent = DequeueEvent(&_eventToProcess);
 
     if (receivedEvent)
     {
-        switch(eventToProcess.eventType)
+        switch(_eventToProcess.eventType)
         {
             case EventType_1s:
                 break;
 
             case EventType_200ms:
-			    TOGGLE_LED0;
+				ProcessLeds();
 			    break;
 
             case EventType_40ms:
                 break;
 
             case EventType_8ms:
+                CheckPushButtons();
+                if(PushButtonsPressed() & PushButton_0)
+				{
+					SetLedPattern(LedPattern_BlinkThrice, Led_10, false);
+				}
+				if(PushButtonsReleased() & PushButton_0)
+				{
+					SetLedPattern(LedPattern_BlinkThrice, Led_9, false);
+				}
                 break;
 
             default:

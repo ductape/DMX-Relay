@@ -20,10 +20,10 @@ static volatile bool _dataReady = false;
 
 /**** LOCAL FUNCTIONS ****/
 
-/** Initialize the UART port. 
-    
+/** Initialize the UART port.
+
     Initialize the UART port to run at 250Kbaud based on an 8MHz system clock
-    8 data bits, no parity, 2 stop bits asynchronous serial. 
+    8 data bits, no parity, 2 stop bits asynchronous serial.
 */
 void SerialInit(void)
 {
@@ -62,18 +62,18 @@ void SerialInit(void)
 
 bool SerialReadByte( RxData_t *rxData )
 {
-	volatile bool byteAvailable = false; 
-	
+	volatile bool byteAvailable = false;
+
 	if( _dataReady )
 	{
-		_dataReady = false; 
-		rxData->data = _rxData.data; 
-		rxData->statusByte = _rxData.statusByte; 
+		_dataReady = false;
+		rxData->data = _rxData.data;
+		rxData->statusByte = _rxData.statusByte;
 		byteAvailable = true;
 	}
-	
-	return byteAvailable; 		 
-}	
+
+	return byteAvailable;
+}
 
 void SerialWriteByte( uint8_t byte )
 {
@@ -82,26 +82,41 @@ void SerialWriteByte( uint8_t byte )
 	}
 	UDR0 = byte;
 }
-void SerialWriteString( uint8_t* string )
+
+void SerialWriteChar( char character )
 {
-	uint8_t* stringPtr = string;
+	while ( !(UCSR0A & (1 << UDRE0)) )
+	{
+	}
+	UDR0 = character;
+}
+
+void SerialWriteString( char* string )
+{
+	char* stringPtr = string;
 
 	while( *stringPtr != '\0')
 	{
-		SerialWriteByte(*stringPtr);
+		SerialWriteChar(*stringPtr);
 		stringPtr++;
 	}
 }
 
-void SerialPrintInt(int16_t number)
+void SerialWriteHexByte( uint8_t byte )
 {
-	uint8_t* valueToWrite[7]; //maximum size of a 16 bit integer + sign + \c
-	//itoa(number, &valueToWrite, 10);
-	//SerialWriteString(valueToWrite);
+	static const char const hexString[17] = "0123456789ABCDEF";
+    volatile uint8_t nibble = 0;
 
+	/* mask off the upper nibble */
+	nibble = (uint8_t)((byte >> 4) & 0x0F);
+	SerialWriteChar(hexString[nibble]);
+
+	/* now the lower nibble */
+	nibble = (uint8_t)(byte & 0x0F);
+	SerialWriteChar(hexString[nibble]);
 }
 
-ISR(USART_RX_vect)
+ISR( USART_RX_vect )
 {
 	_dataReady = true;
 	_rxData.statusByte = UCSR0A;

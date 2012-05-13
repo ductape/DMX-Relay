@@ -16,9 +16,9 @@
 /**** LOCAL CONSTANTS ****/
 
 /**** LOCAL VARIABLES ****/
-static volatile uint8_t _ledPatterns[Led_Last - 1]    = { 0u };
-static volatile uint8_t _ledIndexNumber[Led_Last - 1] = { STEPS_IN_BYTE };
-static volatile bool    _ledRepeating[Led_Last - 1]   = { false };
+static volatile uint8_t _ledPatterns[Led_Last]    = { 0u };
+static volatile uint8_t _ledIndexNumber[Led_Last] = { STEPS_IN_BYTE };
+static volatile bool    _ledRepeating[Led_Last]   = { false };
 
 /**** LOCAL FUNCTION DECLARATIONS ****/
 void _SetLed(Led_t led);
@@ -59,12 +59,6 @@ void SetLedPattern( LedPattern_t ledPattern,
 	_ledPatterns[led]    = ledPattern;
 	_ledRepeating[led]   = repeating;
 	_ledIndexNumber[led] = STEPS_IN_BYTE;
-
-	SerialWriteString("led:");
-	SerialWriteHexByte(led);
-	SerialWriteString(",pattern:");
-	SerialWriteHexByte(ledPattern);
-	SerialWriteString(repeating ? ",true\n" : ",false\n");
 }
 
 void ClearLed( Led_t led )

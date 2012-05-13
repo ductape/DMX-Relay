@@ -6,15 +6,15 @@
              and will accept a DMX signal as serial input and output the
              DMX channel on relays.
 */
-#include <avr/io.h>
+#include "ProjectTypes.h"
 #include <avr/interrupt.h>
-#include <stdbool.h>
 #include "Uart.h"
 #include "Cpu.h"
 #include "Gpio.h"
 #include "Timer.h"
 #include "Startup.h"
 #include "Application.h"
+#include "Led.h"
 
 /**** LOCAL DEFINITIONS ****/
 #define NUM_CHAN 9
@@ -46,6 +46,8 @@ int main (void)
 
 	sei();
 
+    SetLedPattern(LedPattern_BlinkTwice, Led_0, true);
+
 	while (1)
 	{
         ProcessEvents();
@@ -68,7 +70,7 @@ int main (void)
 			}
 			else
 			{
-                #ifdef DEBUG
+                #if defined(DEBUG ) && defined(PC_MODE)
 				SerialWriteString("chan=");
 				SerialPrintInt(channel);
 				SerialWriteString(", lev=");
