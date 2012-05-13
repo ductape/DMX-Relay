@@ -21,20 +21,10 @@ typedef enum PushButton
 
 /**** PUBLIC VARIABLES ****/
 
-/** Stores the current "pressed" state of the push buttons. Never write to this
-    variable outside of this module. */
-extern uint8_t PushButtons;
-
-/** Stores when the buttons have been pressed. Always clear this variable after
-    reading it so that the press will be unlatched */
-extern uint8_t PushButtonsPressed;
-
-/** Stores when the buttons have been released. Always clear this variable after
-    reading it so that the release will be unlatched */
-extern uint8_t PushButtonsReleased;
-
 /**** PUBLIC FUNCTION PROTOTYPES ****/
 void CheckPushButtons( void );
-
+uint8_t PushButtonsPressed( void);
+uint8_t PushButtonsReleased( void );
+uint8_t PushButtonState( void );
 
 #endif /* PUSHBUTTON_H_ */
