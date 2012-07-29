@@ -50,8 +50,8 @@ void SerialInit(void)
 	*/
 	UCSR0C = 0x0E; // Asynchronous 8N2
 
-	/* enable USART */
-	UCSR0B = (1 << RXEN0) | (1 << TXEN0);
+	/* enable USART in receive only */
+	UCSR0B = (1 << RXEN0) /*| (1 << TXEN0)*/;
 
 	#ifdef RECEIVE_INTERRUPT
 	/* enable interrupts on received bytes */

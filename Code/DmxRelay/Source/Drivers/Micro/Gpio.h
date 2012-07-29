@@ -66,6 +66,10 @@
 #define CLEAR_LED10  PORTD &= ~LED10
 #define TOGGLE_LED10 PIND = LED10;
 
+#define POWER_LED_ON        (1<<PIND1)
+#define SET_POWER_LED_ON    PORTD |= POWER_LED_ON
+#define CLEAR_POWER_LED_ON  PORTD &= ~POWER_LED_ON
+#define TOGGLE_POWER_LED_ON PIND = POWER_LED_ON;
 
 #define BUTTON0         (1<<PINC0)
 #define READ_BUTTON0    ((PINC & BUTTON0) == false)
