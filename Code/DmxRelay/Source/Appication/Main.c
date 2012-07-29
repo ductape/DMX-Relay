@@ -86,32 +86,32 @@ int main (void)
                 {
                     switch(channel)
                     {
-                        case 0:
-                            SET_LED0;
-                            break;
+                        //case 0:
+                            //SetLedPattern(LedPatteron_On, Led_0, true);
+                            //break;
                         case 1:
-                            SET_LED1;
+                            SetLedPattern(LedPatteron_On, Led_1, true);
                             break;
                         case 2:
-                            SET_LED2;
+                            SetLedPattern(LedPatteron_On, Led_2, true);
                             break;
                         case 3:
-                            SET_LED3;
+                            SetLedPattern(LedPatteron_On, Led_3, true);
                             break;
                         case 4:
-                            SET_LED4;
+                            SetLedPattern(LedPatteron_On, Led_4, true);
                             break;
                         case 5:
-                            SET_LED5;
+                            SetLedPattern(LedPatteron_On, Led_5, true);
                             break;
                         case 6:
-                            SET_LED6;
+                            SetLedPattern(LedPatteron_On, Led_6, true);
                             break;
                         case 7:
-                            SET_LED7;
+                            SetLedPattern(LedPatteron_On, Led_7, true);
                             break;
                         case 8:
-                            SET_LED8;
+                            SetLedPattern(LedPatteron_On, Led_8, true);
                             break;
                         default:
                             break;
@@ -121,32 +121,32 @@ int main (void)
                 {
                     switch(channel)
                     {
-                        case 0:
-                            CLEAR_LED0;
-                            break;
+                        //case 0:
+                            //SetLedPattern(LedPattern_Off, Led_0, true);
+                            //break;
                         case 1:
-                            CLEAR_LED1;
+                            SetLedPattern(LedPattern_Off, Led_1, true);
                             break;
                         case 2:
-                            CLEAR_LED2;
+                            SetLedPattern(LedPattern_Off, Led_2, true);
                             break;
                         case 3:
-                            CLEAR_LED3;
+                            SetLedPattern(LedPattern_Off, Led_3, true);
                             break;
                         case 4:
-                            CLEAR_LED4;
+                            SetLedPattern(LedPattern_Off, Led_4, true);
                             break;
                         case 5:
-                            CLEAR_LED5;
+                            SetLedPattern(LedPattern_Off, Led_5, true);
                             break;
                         case 6:
-                            CLEAR_LED6;
+                            SetLedPattern(LedPattern_Off, Led_6, true);
                             break;
                         case 7:
-                            CLEAR_LED7;
+                            SetLedPattern(LedPattern_Off, Led_7, true);
                             break;
                         case 8:
-                            CLEAR_LED8;
+                            SetLedPattern(LedPattern_Off, Led_8, true);
                             break;
                         default:
                             break;
