@@ -19,7 +19,7 @@ void GpioInit(void)
 	PORTB &= ~(LED2 | LED3 | LED6 | LED7 | LED8);
 
     /* enable the power led on */
-    SET_POWER_LED_ON;
+    CLEAR_POWER_LED_ON;
 
     /* configure the inputs */
     DDRC &= ~(BUTTON0 | BUTTON1 | BUTTON2 | BUTTON3);
