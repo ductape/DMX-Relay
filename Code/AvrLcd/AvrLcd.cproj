@@ -12,9 +12,9 @@
     <OutputFileName>$(MSBuildProjectName)</OutputFileName>
     <OutputFileExtension>.elf</OutputFileExtension>
     <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
-    <AssemblyName>DmxRelay</AssemblyName>
-    <Name>DmxRelay</Name>
-    <RootNamespace>DmxRelay</RootNamespace>
+    <AssemblyName>AvrLcd</AssemblyName>
+    <Name>AvrLcd</Name>
+    <RootNamespace>AvrLcd</RootNamespace>
     <ToolchainFlavour>Native</ToolchainFlavour>
     <AsfVersion>2.11.1</AsfVersion>
     <KeepTimersRunning>true</KeepTimersRunning>
