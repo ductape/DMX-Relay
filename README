@@ -1,2 +1,1 @@
-This project is based on a ATmega168A microcontroller and will recieve DMX communication to control standard mechanical
-relays. The project is build in AVR Studio 5.1 using the default compiler. 
+This project is based on a ATmega168A microcontroller and control a 16x2 character LCD. The project is build in Atmel Studio 6.0.1996 Service Pack 2 using the AVRGCC compiler AVR Toolchain 8-bit 3.4.1.830 - GCC 4.6.2. 
