@@ -10,17 +10,20 @@
 
 void GpioInit(void)
 {
-	/* configure the outputs */
-	DDRD |= LED0 | LED1 | LED4 | LED5 | LED9 | LED10 | POWER_LED_ON;
-	DDRB |= LED2 | LED3 | LED6 | LED7 | LED8;
+    /* configure LCD */
+	DDRD |= LCD_DB0 | LCD_DB1 | LCD_DB2 | LCD_DB3 | LCD_DB4 | LCD_DB5 | LCD_DB6 | LCD_DB7;
+	DDRB |= LCD_CONTRAST | LCD_E;
+    DDRC |= LCD_RS | LCD_RnW;
+
+    /* configure THERMAL */
+    DDRB |= THERM_SS | THERM_MOSI | THERM_SCK;
+    DDRB &= ~(THERM_MISO);
+
+    /* configure the pushbuttons */
+    DDRC &= ~(BUTTON0 | BUTTON1 | BUTTON2 | BUTTON3);
 
 	/* ensure all the outputs are off */
-	PORTD &= ~(LED0 | LED1 | LED4 | LED5 | LED9 | LED10);
-	PORTB &= ~(LED2 | LED3 | LED6 | LED7 | LED8);
-
-    /* enable the power led on */
-    CLEAR_POWER_LED_ON;
-
-    /* configure the inputs */
-    DDRC &= ~(BUTTON0 | BUTTON1 | BUTTON2 | BUTTON3);
+	PORTD = 0x00;
+	PORTC = 0x00;
+    PORTB = 0x00;
 }

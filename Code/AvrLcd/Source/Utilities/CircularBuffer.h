@@ -10,8 +10,17 @@
 #ifndef CIRCULARBUFFER_H_
 #define CIRCULARBUFFER_H_
 
+typedef struct CircularBuffer
+{
+    const uint8_t* bufferStart;
+    const uint8_t  bufferSize;
+    uint8_t start;
+    uint8_t end;
+    uint8_t numberInBuffer;
+} CircularBuffer_t;
 
-
+bool CircularBuffer_Add(uint8_t  value, CircularBuffer_t *buffer);
+bool CircularBuffer_Get(uint8_t *value, CircularBuffer_t *buffer);
 
 
 #endif /* CIRCULARBUFFER_H_ */
