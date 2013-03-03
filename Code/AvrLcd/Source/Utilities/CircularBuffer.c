@@ -27,7 +27,7 @@ bool CircularBuffer_Add(uint8_t  value, CircularBuffer_t *buffer)
 
     if (buffer->numberInBuffer < (buffer->bufferSize - 1u))
     {
-        (buffer->bufferStart)[buffer->end] = value;
+        buffer->buffer[buffer->end] = value;
         if (++(buffer->end) >= buffer->bufferSize)
         {
             buffer->end = 0u;
@@ -45,7 +45,7 @@ bool CircularBuffer_Get(uint8_t *value, CircularBuffer_t *buffer)
 
     if (buffer->numberInBuffer > 0u)
     {
-        value = (buffer->bufferStart)[buffer->start];
+        value = buffer->buffer[buffer->start];
 
         if (++(buffer->start) >= buffer->bufferSize)
         {

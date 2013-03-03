@@ -7,7 +7,7 @@
 #include "Lcd.h"
 #include "Gpio.h"
 #include <Cpu.h>
-#include <avr/delay.h>
+#include <util/delay.h>
 
 /**** PUBLIC VARIABLES ****/
 
@@ -26,6 +26,11 @@ static uint8_t _ReadChar(bool control, uint8_t address);
 /**** FUNCTION DEFINITIONS ****/
 
 
+bool Lcd_WriteCharacter(uint8_t character)
+{
+    _WriteChar(false, character);
+    return true;
+}
 
 static void _WriteChar(bool control, uint8_t character)
 {

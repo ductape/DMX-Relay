@@ -12,11 +12,11 @@
 
 typedef struct CircularBuffer
 {
-    const uint8_t* bufferStart;
-    const uint8_t  bufferSize;
     uint8_t start;
     uint8_t end;
     uint8_t numberInBuffer;
+    const uint8_t  bufferSize;
+    uint8_t *buffer;
 } CircularBuffer_t;
 
 bool CircularBuffer_Add(uint8_t  value, CircularBuffer_t *buffer);

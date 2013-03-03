@@ -20,6 +20,7 @@ typedef enum EventType
 	EventType_40ms,
 	EventType_200ms,
 	EventType_1s,
+    EventType_LCD,
 	EventType_Last
 } EventType_t;
 
@@ -30,6 +31,7 @@ typedef struct Event
 	uint8_t eventData;
 } Event_t;
 
+/**** PUBLIC FUNCTIONS ****/
 bool EnqueueEvent(const Event_t *event);
 bool DequeueEvent(Event_t *event);
 

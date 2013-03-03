@@ -9,7 +9,11 @@
 #define LCD_H_
 
 
+/**** PUBLIC DEFINITIONS ****/
 
+
+/**** PUBLIC FUNCTIONS ******/
+bool Lcd_WriteCharacter(uint8_t character);
 
 
 #endif /* LCD_H_ */
