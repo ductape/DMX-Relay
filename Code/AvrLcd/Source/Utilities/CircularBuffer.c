@@ -45,13 +45,26 @@ bool CircularBuffer_Get(uint8_t *value, CircularBuffer_t *buffer)
 
     if (buffer->numberInBuffer > 0u)
     {
-        value = buffer->buffer[buffer->start];
+        *value = buffer->buffer[buffer->start];
 
         if (++(buffer->start) >= buffer->bufferSize)
         {
             buffer->start = 0u;
         }
         --(buffer->numberInBuffer);
+        couldBeRemoved = true;
+    }
+
+    return couldBeRemoved;
+}
+
+bool CircularBuffer_Peek(uint8_t *value, CircularBuffer_t *buffer)
+{
+    bool couldBeRemoved = false;
+
+    if (buffer->numberInBuffer > 0u)
+    {
+        *value = buffer->buffer[buffer->start];
         couldBeRemoved = true;
     }
 

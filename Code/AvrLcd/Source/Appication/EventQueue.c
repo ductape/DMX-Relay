@@ -16,7 +16,7 @@
 #define QUEUE_SIZE 11u
 
 /**** LOCAL VARIABLES ****/
-static Event_t  _queue[QUEUE_SIZE] = {EventType_Invalid, 0u};
+static Event_t  _queue[QUEUE_SIZE];
 static uint8_t  _start             = 0u;
 static uint8_t  _end               = 0u;
 static uint8_t  _numberInQueue     = 0u;

@@ -28,6 +28,10 @@ static CircularBuffer_t _buffer =
 /**** LOCAL FUNCTION PROTOTYPES ****/
 
 /**** LOCAL FUNCTIONS ****/
+void LcdControl_Init(void)
+{
+    /* TODO: spg - do something */
+}
 
 bool LcdControl_WriteString(const char* string)
 {
@@ -52,15 +56,33 @@ bool LcdControl_WriteString(const char* string)
     return success;
 }
 
-bool LcdControl_SetCursorLocation(uint8_t character, uint8_t line)
+bool LcdControl_SetCursorLocation(LcdRows_t row, LcdColumns_t column)
 {
     bool success = false;
+    uint8_t address;
+
+    if ((row < LcdControl_Dimensions.rows) &&
+        (column < LcdControl_Dimensions.columns))
+    {
+        if (row == 0u)
+        {
+            address = column;
+        }
+        else
+        {
+            address = LINE2_START_ADDRESS + column;
+        }
+
+        success = Lcd_SetDdramAddress(address);
+    }
+
     return success;
 }
 
 bool LcdControl_ClearDisplay(void)
 {
     bool success = false;
+    /* TODO: spg - do something here */
     return success;
 }
 

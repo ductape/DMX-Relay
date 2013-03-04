@@ -12,8 +12,10 @@
 /**** PUBLIC VARIABLES ****/
 
 /**** LOCAL DEFINES ****/
-#define CLEAR_DISPLAY   ((uint8_t)(0x01))
-#define RETURN_HOME     ((uint8_t)(0x02))
+#define DDRAM_ADDRESS_MAX   (0b01111111)
+#define DDRAM_OPCODE        (0b10000000)
+#define CGRAM_ADDRESS_MAX   (0b00111111)
+#define CGRAM_OPCODE        (0b01000000)
 
 /**** LOCAL CONSTANTS ****/
 
@@ -29,6 +31,56 @@ static uint8_t _ReadChar(bool control, uint8_t address);
 bool Lcd_WriteCharacter(uint8_t character)
 {
     _WriteChar(false, character);
+    return true;
+}
+
+bool Lcd_SetConfig(LcdConfOption_t option)
+{
+    uint8_t character;
+    bool success = true;
+
+    switch(option)
+    {
+        case LcdConfOption_CLR_DISP:
+            character = 0b00000001;
+            break;
+
+        case LcdConfOption_GO_HOME:
+            character = 0b00000010;
+            break;
+
+        case LcdConfOption_CURSOR_LEFT:
+            character = 0b00000100;
+            break;
+
+        case LcdConfOption_CURSOR_RIGHT:
+            character = 0b00000101;
+            break;
+
+        case LcdConfOption_SHIFT_LEFT:
+            character = 0b00000110;
+            break;
+
+        case LcdConfOption_SHIFT_RIGHT:
+            character = 0b00000111;
+            break;
+
+        default:
+            success = false;
+            break;
+    }
+
+    if (success)
+    {
+        _WriteChar(true, character);
+    }
+
+    return success;
+}
+
+bool Lcd_SetDdramAddress(uint8_t address)
+{
+    _WriteChar(true, (DDRAM_OPCODE & (DDRAM_ADDRESS_MAX & address)));
     return true;
 }
 

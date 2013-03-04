@@ -29,8 +29,9 @@ static const LcdDimension_t LcdControl_Dimensions =
 };
 
 /**** PUBLIC FUNCTIONS ******/
+void LcdControl_Init(void);
 bool LcdControl_WriteString(const char* string);
-bool LcdControl_SetCursorLocation(uint8_t character, uint8_t line);
+bool LcdControl_SetCursorLocation(LcdRows_t row, LcdColumns_t column);
 bool LcdControl_ClearDisplay(void);
 
 void LcdControl_ProcessLcd(void);

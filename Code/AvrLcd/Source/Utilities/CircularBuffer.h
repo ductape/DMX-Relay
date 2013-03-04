@@ -21,6 +21,7 @@ typedef struct CircularBuffer
 
 bool CircularBuffer_Add(uint8_t  value, CircularBuffer_t *buffer);
 bool CircularBuffer_Get(uint8_t *value, CircularBuffer_t *buffer);
+bool CircularBuffer_Peek(uint8_t *value, CircularBuffer_t *buffer);
 
 
 #endif /* CIRCULARBUFFER_H_ */
