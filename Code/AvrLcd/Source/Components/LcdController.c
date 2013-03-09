@@ -9,6 +9,8 @@
 #include <CircularBuffer.h>
 #include <string.h>
 #include <EventQueue.h>
+#include <Cpu.h>
+#include <util/delay.h>
 
 /**** LOCAL DEFINITIONS ****/
 #define LCD_BUFFER_LENGTH   (32u)
@@ -48,7 +50,7 @@ bool LcdControl_WriteString(const char* string)
     uint8_t index;
 
     strlength = strlen(string);
-
+#ifndef NO_BUFFERING
     if (strlength < (_buffer.bufferSize - _buffer.numberInBuffer))
     {
         for (index = 0u; index < strlength; ++index)
@@ -63,9 +65,16 @@ bool LcdControl_WriteString(const char* string)
 
     if (success)
     {
-        EnqueueEvent(&_event); 
+        EnqueueEvent(&_event);
     }
-
+#else
+    for (index = 0u; index < strlength; ++index)
+    {
+        Lcd_WriteCharacter(string[index]);
+        _delay_ms(1);
+    }
+    success = true;
+#endif
     return success;
 }
 
@@ -95,7 +104,7 @@ bool LcdControl_SetCursorLocation(LcdRows_t row, LcdColumns_t column)
 bool LcdControl_ClearDisplay(void)
 {
     bool success = false;
-    /* TODO: spg - do something here */
+    success = Lcd_SetConfig(LcdConfOption_CLR_DISP);
     return success;
 }
 

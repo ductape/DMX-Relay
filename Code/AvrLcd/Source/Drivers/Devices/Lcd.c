@@ -147,7 +147,8 @@ bool Lcd_SetConfig(LcdConfOption_t option)
 
 bool Lcd_SetDdramAddress(uint8_t address)
 {
-    _WriteChar(true, (DDRAM_OPCODE & (DDRAM_ADDRESS_MAX & address)));
+    _WriteChar(true, (DDRAM_OPCODE | (DDRAM_ADDRESS_MAX & address)));
+    _delay_ms(1);
     return true;
 }
 

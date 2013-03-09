@@ -11,6 +11,9 @@
 
 /**** PUBLIC DEFINITIONS ****/
 
+#if 1 /* sets if the LCD display buffers characters or not */
+#define NO_BUFFERING
+#endif
 /** Define the dimensions of the character LCD */
 typedef uint8_t LcdRows_t;
 typedef uint8_t LcdColumns_t;

@@ -26,6 +26,9 @@
 void RunStartup( void )
 {
     bool success;
-    delay;
-    success = LcdControl_WriteString("hello world");
+    success = LcdControl_WriteString("  Richie's EGT");
+    success = LcdControl_SetCursorLocation(1, 0);
+    success = LcdControl_WriteString("     sensor");
+    _delay_ms(3000);
+    success = LcdControl_ClearDisplay();
 }
