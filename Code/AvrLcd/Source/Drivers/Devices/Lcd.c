@@ -86,7 +86,7 @@ void Lcd_Init(void)
     _delay_ms(15u); /** let the LCD boot up */
     _WriteChar(true, (LcdReg_FUNCTION_SET | RegFunction_BUS_BIT_8 | RegFunction_DISP_LINES_2 | RegFunction_CHAR_5X8));
     _delay_ms(5u);  /** let the settings get applied */
-    _WriteChar(true, (LcdReg_DISP_ON_OFF | RegDisp_DISPLAY_ON | RegDisp_CURSOR_ON | RegDisp_BLINK_ON));
+    _WriteChar(true, (LcdReg_DISP_ON_OFF | RegDisp_DISPLAY_ON | RegDisp_CURSOR_OFF | RegDisp_BLINK_OFF));
     _delay_ms(1u);
     _WriteChar(true, (LcdReg_ENTRY_MODE | RegEntryMode_INC_RIGHT | RegEntryMode_SHIFT_OFF));
     _delay_ms(1u);
