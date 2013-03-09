@@ -58,28 +58,11 @@ void ProcessEvents(void)
                 if(PushButtonsPressed() & PushButton_UP)
 				{
                     pwmDuty = Pwm_GetDuty();
-                    if ((pwmDuty + BRIGHTNESS_CHANGE) > PWM_MAX_DUTY)
-                    {
-                        pwmDuty = PWM_MAX_DUTY;
-                    }
-                    else
-                    {
-                        pwmDuty += BRIGHTNESS_CHANGE;
-                    }
-					Pwm_SetDuty(pwmDuty);
+					Pwm_SetDuty(pwmDuty ? (pwmDuty << 1u) : 1u);
 				}
 				if(PushButtonsPressed() & PushButton_DOWN)
 				{
-                    pwmDuty = Pwm_GetDuty();
-                    if (pwmDuty < BRIGHTNESS_CHANGE)
-                    {
-                        pwmDuty = 0u;
-                    }
-                    else
-                    {
-                        pwmDuty -= BRIGHTNESS_CHANGE;
-                    }
-					Pwm_SetDuty(pwmDuty);
+					Pwm_SetDuty(Pwm_GetDuty() >> 1u);
 				}
                 break;
 
