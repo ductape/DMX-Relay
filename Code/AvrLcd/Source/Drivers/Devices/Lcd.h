@@ -38,6 +38,7 @@ typedef enum LcdConfOption
 #define LINE2_START_ADDRESS     (0x40u)
 
 /**** PUBLIC FUNCTIONS ******/
+void Lcd_Init(void);
 bool Lcd_WriteCharacter(uint8_t character);
 bool Lcd_SetConfig(LcdConfOption_t option);
 bool Lcd_SetDdramAddress(uint8_t address);

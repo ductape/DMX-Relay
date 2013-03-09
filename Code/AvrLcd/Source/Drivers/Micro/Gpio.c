@@ -26,4 +26,7 @@ void GpioInit(void)
 	PORTD = 0x00;
 	PORTC = 0x00;
     PORTB = 0x00;
+    
+    /* Turn on LCD backlight */
+    SET_LCD_CONTRAST; 
 }

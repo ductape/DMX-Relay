@@ -25,12 +25,20 @@ static CircularBuffer_t _buffer =
     _bufferData
 };
 
+/**** LOCAL CONSTANTS ****/
+/** Defines an event to process for the LCD controller */
+static const Event_t _event =
+{
+    EventType_LCD,
+    0u
+};
+
 /**** LOCAL FUNCTION PROTOTYPES ****/
 
 /**** LOCAL FUNCTIONS ****/
 void LcdControl_Init(void)
 {
-    /* TODO: spg - do something */
+    Lcd_Init();
 }
 
 bool LcdControl_WriteString(const char* string)
@@ -51,6 +59,11 @@ bool LcdControl_WriteString(const char* string)
                 break;
             }
         }
+    }
+
+    if (success)
+    {
+        EnqueueEvent(&_event); 
     }
 
     return success;
@@ -88,11 +101,6 @@ bool LcdControl_ClearDisplay(void)
 
 void LcdControl_ProcessLcd(void)
 {
-    static const Event_t event =
-    {
-        EventType_LCD,
-        0u
-    };
     uint8_t character;
     bool success;
 
@@ -105,7 +113,7 @@ void LcdControl_ProcessLcd(void)
 
             if (_buffer.numberInBuffer > 0)
             {
-                EnqueueEvent(&event);
+                EnqueueEvent(&_event);
             }
         }
     }

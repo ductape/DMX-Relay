@@ -6,10 +6,12 @@
              such as a special startup sequence to display information to the user.
 */
 
+#include <ProjectTypes.h>
 #include "Startup.h"
 #include "Cpu.h"
 #include <util/delay.h>
 #include "Gpio.h"
+#include <LcdController.h>
 #include <avr/io.h>
 
 /**** LOCAL DEFINITIONS ****/
@@ -23,5 +25,7 @@
 /** Runs a startup script */
 void RunStartup( void )
 {
-
+    bool success;
+    delay;
+    success = LcdControl_WriteString("hello world");
 }

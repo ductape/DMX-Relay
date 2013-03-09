@@ -12,6 +12,7 @@
 #include "Timer.h"
 #include "Startup.h"
 #include "Application.h"
+#include <LcdController.h>
 
 /**** LOCAL DEFINITIONS ****/
 
@@ -25,6 +26,7 @@ int main (void)
 	CpuConfig();
 	GpioInit();
 	TimerInit();
+    LcdControl_Init();
 
     RunStartup();
 

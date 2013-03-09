@@ -12,6 +12,7 @@
 #include "Timer.h"
 #include "PushButton.h"
 #include "Led.h"
+#include <LcdController.h>
 
 /**** PUBLIC VARIABLES ****/
 
@@ -59,6 +60,10 @@ void ProcessEvents(void)
 				{
 					SetLedPattern(LedPattern_BlinkThrice, Led_9, false);
 				}
+                break;
+
+            case EventType_LCD:
+                LcdControl_ProcessLcd();
                 break;
 
             default:
