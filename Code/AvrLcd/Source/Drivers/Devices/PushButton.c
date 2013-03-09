@@ -36,10 +36,10 @@ void CheckPushButtons(void)
     volatile uint8_t currentPushButtons = PushButton_None;
 
     /* get the current state of the push buttons */
-	currentPushButtons |= READ_BUTTON0 ? PushButton_0 : PushButton_None;
-	currentPushButtons |= READ_BUTTON1 ? PushButton_1 : PushButton_None;
-	currentPushButtons |= READ_BUTTON2 ? PushButton_2 : PushButton_None;
-	currentPushButtons |= READ_BUTTON3 ? PushButton_3 : PushButton_None;
+	currentPushButtons |= READ_BUTTON0 ? PushButton_DOWN : PushButton_None;
+	currentPushButtons |= READ_BUTTON1 ? PushButton_LEFT : PushButton_None;
+	currentPushButtons |= READ_BUTTON2 ? PushButton_RIGHT : PushButton_None;
+	currentPushButtons |= READ_BUTTON3 ? PushButton_UP : PushButton_None;
 
     /* if the button state has changed and the current state is pressed, then the button was just pressed */
     _pushButtonsPressed = (currentPushButtons ^ _previousPushButtons) & currentPushButtons;

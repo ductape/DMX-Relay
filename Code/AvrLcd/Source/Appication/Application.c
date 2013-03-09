@@ -13,11 +13,13 @@
 #include "PushButton.h"
 #include "Led.h"
 #include <LcdController.h>
+#include <Pwm.h>
 
 /**** PUBLIC VARIABLES ****/
 
 /**** LOCAL DEFINES ****/
-
+/** Defines the amount to increment the brightness by */
+#define BRIGHTNESS_CHANGE   (PWM_MAX_DUTY/8)
 /**** LOCAL CONSTANTS ****/
 
 /**** LOCAL VARIABLES ****/
@@ -29,6 +31,7 @@ Event_t _eventToProcess = {EventType_Invalid, 0u};
 void ProcessEvents(void)
 {
     volatile bool receivedEvent = false;
+    uint16_t pwmDuty;
 
     /* process the timer ticks */
 	ProcessTick();
@@ -52,13 +55,31 @@ void ProcessEvents(void)
 
             case EventType_8ms:
                 CheckPushButtons();
-                if(PushButtonsPressed() & PushButton_0)
+                if(PushButtonsPressed() & PushButton_UP)
 				{
-					SetLedPattern(LedPattern_BlinkThrice, Led_10, false);
+                    pwmDuty = Pwm_GetDuty();
+                    if ((pwmDuty + BRIGHTNESS_CHANGE) > PWM_MAX_DUTY)
+                    {
+                        pwmDuty = PWM_MAX_DUTY;
+                    }
+                    else
+                    {
+                        pwmDuty += BRIGHTNESS_CHANGE;
+                    }
+					Pwm_SetDuty(pwmDuty);
 				}
-				if(PushButtonsReleased() & PushButton_0)
+				if(PushButtonsPressed() & PushButton_DOWN)
 				{
-					SetLedPattern(LedPattern_BlinkThrice, Led_9, false);
+                    pwmDuty = Pwm_GetDuty();
+                    if (pwmDuty < BRIGHTNESS_CHANGE)
+                    {
+                        pwmDuty = 0u;
+                    }
+                    else
+                    {
+                        pwmDuty -= BRIGHTNESS_CHANGE;
+                    }
+					Pwm_SetDuty(pwmDuty);
 				}
                 break;
 

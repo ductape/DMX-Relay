@@ -13,10 +13,10 @@
 typedef enum PushButton
 {
 	PushButton_None = 0x00,
-	PushButton_0    = 0x01,
-	PushButton_1    = 0x02,
-	PushButton_2    = 0x04,
-	PushButton_3    = 0x08
+	PushButton_DOWN    = 0x01,
+	PushButton_LEFT    = 0x02,
+	PushButton_RIGHT    = 0x04,
+	PushButton_UP    = 0x08
 } PushButton_t;
 
 /**** PUBLIC VARIABLES ****/

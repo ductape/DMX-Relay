@@ -12,7 +12,7 @@ void GpioInit(void)
 {
     /* configure LCD */
 	DDRD |= LCD_DB0 | LCD_DB1 | LCD_DB2 | LCD_DB3 | LCD_DB4 | LCD_DB5 | LCD_DB6 | LCD_DB7;
-	DDRB |= LCD_CONTRAST | LCD_E;
+	DDRB |= LCD_BRIGHTNESS | LCD_E;
     DDRC |= LCD_RS | LCD_RnW;
 
     /* configure THERMAL */
@@ -28,5 +28,5 @@ void GpioInit(void)
     PORTB = 0x00;
     
     /* Turn on LCD backlight */
-    SET_LCD_CONTRAST; 
+    SET_LCD_BRIGHTNESS; 
 }

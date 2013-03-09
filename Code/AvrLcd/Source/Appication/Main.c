@@ -13,6 +13,7 @@
 #include "Startup.h"
 #include "Application.h"
 #include <LcdController.h>
+#include <Pwm.h>
 
 /**** LOCAL DEFINITIONS ****/
 
@@ -26,6 +27,7 @@ int main (void)
 	CpuConfig();
 	GpioInit();
 	TimerInit();
+    Pwm_Init();
     LcdControl_Init();
 
     RunStartup();
