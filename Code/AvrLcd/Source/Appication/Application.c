@@ -52,11 +52,11 @@ void ProcessEvents(void)
         switch(_eventToProcess.eventType)
         {
             case EventType_1s:
-                _UpdateTemperature();
                 break;
 
             case EventType_200ms:
 				ProcessLeds();
+                _UpdateTemperature();
 			    break;
 
             case EventType_40ms:
