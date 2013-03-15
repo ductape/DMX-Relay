@@ -14,6 +14,10 @@
 #include "Led.h"
 #include <LcdController.h>
 #include <Pwm.h>
+#include <string.h>
+#include <stdio.h>
+#include <Cpu.h>
+#include <util/delay.h>
 
 /**** PUBLIC VARIABLES ****/
 
@@ -25,6 +29,7 @@
 /**** LOCAL VARIABLES ****/
 Event_t _eventToProcess = {EventType_Invalid, 0u};
 /**** LOCAL FUNCTION DECLARATIONS ****/
+void _UpdateTemperature(void);
 
 /**** FUNCTION DEFINITIONS ****/
 
@@ -44,6 +49,7 @@ void ProcessEvents(void)
         switch(_eventToProcess.eventType)
         {
             case EventType_1s:
+                _UpdateTemperature();
                 break;
 
             case EventType_200ms:
@@ -76,3 +82,23 @@ void ProcessEvents(void)
     }
 }
 
+void _UpdateTemperature(void)
+{
+    bool success;
+    int16_t temp;
+    static uint8_t line1[LCD_COLUMNS];
+    static uint8_t line2[LCD_COLUMNS];
+
+    /* get the temperature */
+    temp = -37;
+
+    /* stick the temperature in a string */
+    snprintf(line1, LCD_COLUMNS, "Temp:  %5d", temp);
+    snprintf(line2, LCD_COLUMNS, "Target:%5d",(-1)*temp);
+
+    /* print the string */
+    success = LcdControl_SetCursorLocation(0, 0);
+    success = LcdControl_WriteString(line1);
+    success = LcdControl_SetCursorLocation(1, 0);
+    success = LcdControl_WriteString(line2);
+}

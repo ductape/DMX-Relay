@@ -24,6 +24,10 @@ typedef struct LcdDimension
     LcdColumns_t columns;
 } LcdDimension_t;
 
+/** Define the size of the LCD */
+#define LCD_COLUMNS     ( 16u )
+#define LCD_ROWS        ( 2u  )
+
 /**** PUBLIC CONSTANTS ******/
 static const LcdDimension_t LcdControl_Dimensions =
 {
