@@ -28,6 +28,8 @@
 
 /**** LOCAL VARIABLES ****/
 Event_t _eventToProcess = {EventType_Invalid, 0u};
+int16_t _targetTemp = 37;
+
 /**** LOCAL FUNCTION DECLARATIONS ****/
 void _UpdateTemperature(void);
 
@@ -37,6 +39,7 @@ void ProcessEvents(void)
 {
     volatile bool receivedEvent = false;
     uint16_t pwmDuty;
+    uint8_t buttonPressed;
 
     /* process the timer ticks */
 	ProcessTick();
@@ -61,15 +64,29 @@ void ProcessEvents(void)
 
             case EventType_8ms:
                 CheckPushButtons();
-                if(PushButtonsPressed() & PushButton_UP)
+                buttonPressed = PushButtonsPressed();
+                if(buttonPressed & PushButton_UP)
 				{
                     pwmDuty = Pwm_GetDuty();
 					Pwm_SetDuty(pwmDuty ? (pwmDuty << 1u) : 1u);
 				}
-				if(PushButtonsPressed() & PushButton_DOWN)
+				else if(buttonPressed & PushButton_DOWN)
 				{
 					Pwm_SetDuty(Pwm_GetDuty() >> 1u);
 				}
+
+                if(buttonPressed & PushButton_RIGHT & PushButton_LEFT)
+                {
+
+                }
+                else if(buttonPressed & PushButton_LEFT)
+                {
+                    --_targetTemp;
+                }
+                else if(buttonPressed & PushButton_RIGHT)
+                {
+                    ++_targetTemp;
+                }
                 break;
 
             case EventType_LCD:
@@ -94,7 +111,7 @@ void _UpdateTemperature(void)
 
     /* stick the temperature in a string */
     snprintf(line1, LCD_COLUMNS, "Temp:  %5d", temp);
-    snprintf(line2, LCD_COLUMNS, "Target:%5d",(-1)*temp);
+    snprintf(line2, LCD_COLUMNS, "Target:%5d", _targetTemp);
 
     /* print the string */
     success = LcdControl_SetCursorLocation(0, 0);
