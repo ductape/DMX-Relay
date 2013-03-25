@@ -9,6 +9,7 @@
 #ifndef GPIO_H_
 #define GPIO_H_
 
+#include <avr/io.h>
 
 /**** DEFINES ****/
 

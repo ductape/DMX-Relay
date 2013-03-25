@@ -122,6 +122,12 @@
     <Compile Include="Source\Components\LcdController.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="Source\Drivers\Devices\Ads1118.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\Drivers\Devices\Ads1118.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="Source\Drivers\Devices\Lcd.c">
       <SubType>compile</SubType>
     </Compile>
