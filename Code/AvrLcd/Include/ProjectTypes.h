@@ -15,5 +15,7 @@
 #include <stdint.h>
 #include <avr/io.h>
 
+typedef char char_t;
+
 
 #endif /* PROJECTTYPES_H_ */

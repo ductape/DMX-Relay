@@ -158,6 +158,12 @@
     <Compile Include="Source\Drivers\Micro\Pwm.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="Source\Drivers\Micro\SpiMaster.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\Drivers\Micro\SpiMaster.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="Source\Drivers\Micro\Uart.c">
       <SubType>compile</SubType>
     </Compile>

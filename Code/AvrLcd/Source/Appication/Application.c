@@ -103,8 +103,8 @@ void _UpdateTemperature(void)
 {
     bool success;
     int16_t temp;
-    static uint8_t line1[LCD_COLUMNS];
-    static uint8_t line2[LCD_COLUMNS];
+    static char_t line1[LCD_COLUMNS];
+    static char_t line2[LCD_COLUMNS];
 
     /* get the temperature */
     temp = -37;
