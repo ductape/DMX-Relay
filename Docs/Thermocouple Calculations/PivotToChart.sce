@@ -9,19 +9,37 @@ pivot = csvRead('Thermocouple Lookup Table.csv');
 data = zeros(1,2);
 [dataRows dataColumns] = size(data); 
 loc = 0;
+zeroF = 0;
+firstZero = 0;
 for i = 2:rows
     rowTemperature = pivot(i,1);
-//    printf("i=%d\n",i);
-    for j = 3:columns
-        offset = pivot(1,j)
-        temperature = rowTemperature + offset; 
-        millivolt = pivot(i,j);        
-        if ~isnan(millivolt) then
-            loc = loc+1;
-            data(loc,:) = [temperature millivolt];
-//            printf("loc=%d,",loc);
-        end;
-//        printf("j=%d,t=%d,m=%f\n",j,temperature,millivolt);
+    if (firstZero == 0) then
+        for j = 3:columns
+            offset = pivot(1,j)
+            temperature = rowTemperature + offset; 
+            millivolt = pivot(i,j);        
+            if ~isnan(millivolt) then
+                loc = loc+1;
+                data(loc,:) = [temperature millivolt];
+    //            printf("loc=%d,",loc);
+                if  temperature == 0 then
+                    zeroF = loc;
+                end
+           end;
+           if (rowTemperature == 0) then
+               firstZero = 1; 
+           end
+        end
+    else
+        for j = 3:columns
+            offset = pivot(1,j)
+            temperature = rowTemperature + offset + 10; 
+            millivolt = pivot(i,j);        
+            if ~isnan(millivolt) then
+                loc = loc+1;
+                data(loc,:) = [temperature millivolt];
+           end;        
+       end
     end;
 end;
 
@@ -48,7 +66,7 @@ end
 
 // smooth the derivative
 derSmooth = zeros(data);
-n = 100;
+n = 30;
 for i = 1:length(der(:,1))
     if (i > n) then
         derSmooth(i,:) = [der(i,1), mean(der((i-n):i,2))];
@@ -78,7 +96,7 @@ end
 
 // smooth the 2nd derivative
 der2Smooth = zeros(data);
-n = 100;
+n = 30;
 for i = 1:length(derSmooth(:,1))
     if (i > n) then
         der2Smooth(i,:) = [der2(i,1), mean(der2((i-n):i,2))];
@@ -102,15 +120,37 @@ xlabel('Temperature (°F)');
 subplot(3,1,3);
 plot(der2Smooth(:,1),der2Smooth(:,2));
 
-subsetSize = 32;
-subset = data(1,:);
-printf("subset 1: %f°F, %f, %fmV, %f°C\n", subset(1,1), subset(1,2)*128, subset(1,2), (subset(1,1)-32)*5/9);
-
-for i = 2:subsetSize
-    subset = [subset; data(round(dataRows/subsetSize*i),:)];
-    printf("subset %d: %f°F, ,%f, %fmV, %f°C\n", i, subset(i,1), (subset(i,2)*128), subset(i,2), (subset(i,1)-32)*5/9);
+positiveSubsetSize = 32;
+negativeSubsetSize = 32;
+mVscaling = 128;
+subset = [data(1,1) data(1,2)];
+i=1;
+//printf("subset %d: %f°F, ,%f, %fmV, %f°C\n", i, subset(i,1), (subset(i,2)*128), subset(i,2), (subset(i,1)-32)*5/9);
+for i = 2:negativeSubsetSize
+    subset = [subset; data(round((zeroF)/negativeSubsetSize*i),:)];
+//    printf("subset %d: %f°F, ,%f, %fmV, %f°C\n", i, subset(i,1), (subset(i,2)*128), subset(i,2), (subset(i,1)-32)*5/9);
 end
 
+for j = 1:positiveSubsetSize
+    subset = [subset; data(round((dataRows-zeroF)/positiveSubsetSize*j+zeroF),:)];
+//    printf("subset %d: %f°F, ,%f, %fmV, %f°C\n", i+j, subset(i+j,1), (subset(i+j,2)*128), subset(i+j,2), (subset(i+j,1)-32)*5/9);
+end
+
+// print the subset table
+
+printf("{ mV*%d, temp °F } \n", mVscaling);
+for i = 1:(negativeSubsetSize + positiveSubsetSize)
+    printf("{ %4d, %4d }", subset(i,2)*128, subset(i,1));
+    if (i < (negativeSubsetSize + positiveSubsetSize)) then
+        printf(",");
+    else
+        printf(" ");
+    end
+    printf(" /* %6.3fmV, %6.1f°F */ \n", subset(i,2), subset(i,1));
+end
+
+
+// Calculate the linear interpolation error 
 subsetIndex = 2;
 lowTemp = subset(1,1);
 highTemp = subset(2,1);
@@ -134,8 +174,7 @@ end
 tempError = abs(data(:,1) - subsetExtended(:,1));
 
 figure(2);
-//plot(data(:,1),data(:,2));
+plot(subsetExtended(:,1),tempError);
 ylabel('Temperature Error (°F)');
 xlabel('Temperature (°F)');
 title('Type K Thermocouple Voltage Versus Temperature');
-plot(subsetExtended(:,1),tempError);
