@@ -3,7 +3,7 @@
  
     \details Contains a conversion table for converting the voltage of the
              thermocouple to a temperature in degrees
- 
+ */
 
 #ifndef THERMOCOUPLE_K_TYPE_TABLE_H_
 #define THERMOCOUPLE_K_TYPE_TABLE_H_

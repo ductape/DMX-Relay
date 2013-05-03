@@ -33,7 +33,7 @@
       </OverrideVtorValue>
       <Channel>
         <host>127.0.0.1</host>
-        <port>49373</port>
+        <port>49222</port>
         <ssl>False</ssl>
       </Channel>
       <ToolOptions>
@@ -117,6 +117,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Include\ProjectTypes.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Include\ThermocoupleKTypeTable.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Source\Appication\Application.c">
@@ -216,6 +219,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Source\Utilities\CircularBuffer.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\Utilities\ThermocoupleConversion.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\Utilities\ThermocoupleConversion.h">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>
