@@ -96,6 +96,11 @@ void Lcd_Init(void)
 
 bool Lcd_WriteCharacter(uint8_t character)
 {
+	/* The display uses a non-standard "degree" value */
+	if (character == '°')
+	{
+		character = 223; 
+	}		
     _WriteChar(false, character);
     return true;
 }

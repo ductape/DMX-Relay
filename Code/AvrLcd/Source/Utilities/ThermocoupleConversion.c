@@ -35,16 +35,16 @@ static void _FindIndexVoltage(int16_t voltage, ConversionData_t *data);
 static int16_t _VoltageToTemperature(int16_t voltage, const ConversionData_t *data);
 static int16_t _TemperatureToVoltage(int16_t temperature, const ConversionData_t *data); 
 
-int16_t ThermConvert_Fahrenheit(const ThermConv_t *conv)
+int16_t ThermConvert_Fahrenheit(int16_t rawAdc, int16_t cjComp)
 {
 	int16_t temperature; 
 	int16_t voltage; 
 	#ifdef _USE_COLD_JUNCTION_COMP
-		_FindIndexTemperature(conv->cjComp, &_convDataComp); 
-		voltage = _TemperatureToVoltage(conv->cjComp, &_convDataComp); 
-		voltage += conv->rawAdc;
+		_FindIndexTemperature(cjComp, &_convDataComp); 
+		voltage = _TemperatureToVoltage(cjComp, &_convDataComp); 
+		voltage += rawAdc;
 	#else
-		voltage = conv->rawAdc;
+		voltage = rawAdc;
 	#endif
 	_FindIndexVoltage(voltage, &_convDataVolt); 
 	temperature = _VoltageToTemperature(voltage, &_convDataVolt); 
@@ -52,7 +52,7 @@ int16_t ThermConvert_Fahrenheit(const ThermConv_t *conv)
 }
 
 
-int16_t ThermConvert_Celsius(const ThermConv_t *conv)
+int16_t ThermConvert_Celsius(int16_t rawAdc, int16_t cjComp)
 {
 	int16_t temperature = 0; 
 	

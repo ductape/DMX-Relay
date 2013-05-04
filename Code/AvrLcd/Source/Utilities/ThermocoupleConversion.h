@@ -17,7 +17,7 @@ typedef struct ThermConv
 	int16_t cjComp; /** The temperature of the cold junction to compensate for */
 } ThermConv_t;
 
-int16_t ThermConvert_Fahrenheit(const ThermConv_t *conv);
-int16_t ThermConvert_Celsius(const ThermConv_t *conv);
+int16_t ThermConvert_Fahrenheit(int16_t rawAdc, int16_t cjComp);
+int16_t ThermConvert_Celsius(int16_t rawAdc, int16_t cjComp);
 
 #endif /* THERMOCOUPLECONVERSION_H_ */
