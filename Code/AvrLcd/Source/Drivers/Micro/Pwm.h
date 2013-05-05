@@ -14,7 +14,7 @@
 #define USE_TIMER_1
 
 /** Defines the maximum value allowable for the PWM output */
-#define PWM_MAX_DUTY    (1023u)
+#define PWM_MAX_DUTY    (1023ul)
 
 /**** PUBLIC CONSTANTS ******/
 

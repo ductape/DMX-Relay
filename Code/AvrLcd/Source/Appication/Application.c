@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <Cpu.h>
 #include <util/delay.h>
+#include <avr/eeprom.h>
 
 /**** PUBLIC VARIABLES ****/
 
@@ -28,9 +29,10 @@
 /**** LOCAL CONSTANTS ****/
 
 /**** LOCAL VARIABLES ****/
-Event_t _eventToProcess = {EventType_Invalid, 0u};
-int16_t _targetTemp = 37;
-int16_t _actualTemperature = -37;
+static Event_t _eventToProcess = {EventType_Invalid, 0u};
+static int16_t _targetTemp = 37;
+static int16_t _actualTemperature = -37;
+
 /**** LOCAL FUNCTION DECLARATIONS ****/
 void _UpdateTemperature(void);
 
@@ -39,9 +41,21 @@ void _UpdateTemperature(void);
 void ProcessEvents(void)
 {
     volatile bool receivedEvent = false;
-    uint16_t pwmDuty;
     uint8_t buttonPressed;
+    uint16_t pwmDuty;
 	static int16_t adcCount = -826;
+	static int16_t EEMEM nonVolTargetTemp = 521l; 
+	static uint16_t EEMEM nonVolPwmDuty = PWM_MAX_DUTY; 
+	
+	/* Initialize the EEPROM memories */
+	static bool firstTime = true; 
+	if (firstTime)
+	{
+		firstTime = false; 
+		_targetTemp = (int16_t)eeprom_read_word((uint16_t*)&nonVolTargetTemp);
+		pwmDuty = eeprom_read_word(&nonVolPwmDuty);
+		Pwm_SetDuty(pwmDuty); 
+	}
 
     /* process the timer ticks */
 	ProcessTick();
@@ -59,6 +73,12 @@ void ProcessEvents(void)
 				{
 					adcCount = -826; 
 				}					 
+				
+				/* if the target temperature has changed, update the non-volatile stored value */
+				eeprom_update_word((uint16_t*)&nonVolTargetTemp, (uint16_t)_targetTemp);
+				/* if the duty cycle has changed, update the non-volatile stored value */
+				pwmDuty = Pwm_GetDuty(); 
+				eeprom_update_word(&nonVolPwmDuty, pwmDuty);
                 break;
 
             case EventType_200ms:
@@ -75,11 +95,13 @@ void ProcessEvents(void)
                 if(buttonPressed & PushButton_UP)
 				{
                     pwmDuty = Pwm_GetDuty();
-					Pwm_SetDuty(pwmDuty ? (pwmDuty << 1u) : 1u);
+					pwmDuty = pwmDuty ? (pwmDuty << 1u) : 1u;
+					Pwm_SetDuty(pwmDuty);
 				}
 				else if(buttonPressed & PushButton_DOWN)
 				{
-					Pwm_SetDuty(Pwm_GetDuty() >> 1u);
+					pwmDuty = Pwm_GetDuty() >> 1u;
+					Pwm_SetDuty(pwmDuty);
 				}
 
                 if(buttonPressed & PushButton_RIGHT & PushButton_LEFT)
@@ -109,7 +131,6 @@ void ProcessEvents(void)
 void _UpdateTemperature(void)
 {
     bool success;
-    int16_t temp;
     static char_t line1[LCD_COLUMNS];
     static char_t line2[LCD_COLUMNS];
 
