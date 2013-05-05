@@ -18,7 +18,7 @@
 /** Defines the number of timer ticks (interrupts) per 200 ms */
 #define TICKS_PER_200MS 25u
 
-/** Defines the number of timer ticks (interrupts per 1 s */
+/** Defines the number of timer ticks (interrupts) per 1 s */
 #define TICKS_PER_1S 0u
 
 /**** LOCAL CONSTANTS ****/

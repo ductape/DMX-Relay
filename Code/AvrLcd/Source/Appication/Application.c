@@ -26,6 +26,12 @@
 /**** LOCAL DEFINES ****/
 /** Defines the amount to increment the brightness by */
 #define BRIGHTNESS_CHANGE   (PWM_MAX_DUTY/8)
+
+/** Defines how long a push button should be pressed before accelerating
+    the increment/decrement. */
+#define PUSH_BUTTON_COUNT_THRESHOLD    (125u)
+#define PUSH_BUTTON_COUNT_FAST_THRESHOLD    (254u)
+
 /**** LOCAL CONSTANTS ****/
 
 /**** LOCAL VARIABLES ****/
@@ -35,6 +41,10 @@ static int16_t _actualTemperature = -37;
 
 /**** LOCAL FUNCTION DECLARATIONS ****/
 void _UpdateTemperature(void);
+static inline void _HandlePushButtonUp(void);
+static inline void _HandlePushButtonDown(void);
+static inline void _HandlePushButtonLeft(void);
+static inline void _HandlePushButtonRight(void);
 
 /**** FUNCTION DEFINITIONS ****/
 
@@ -46,6 +56,7 @@ void ProcessEvents(void)
 	static int16_t adcCount = -826;
 	static int16_t EEMEM nonVolTargetTemp = 521l; 
 	static uint16_t EEMEM nonVolPwmDuty = PWM_MAX_DUTY; 
+	static bool everyOther40ms; 
 	
 	/* Initialize the EEPROM memories */
 	static bool firstTime = true; 
@@ -74,19 +85,48 @@ void ProcessEvents(void)
 					adcCount = -826; 
 				}					 
 				
-				/* if the target temperature has changed, update the non-volatile stored value */
-				eeprom_update_word((uint16_t*)&nonVolTargetTemp, (uint16_t)_targetTemp);
-				/* if the duty cycle has changed, update the non-volatile stored value */
-				pwmDuty = Pwm_GetDuty(); 
-				eeprom_update_word(&nonVolPwmDuty, pwmDuty);
+				/* Only update the non-volatile memory if the push buttons aren't pressed to 
+				   keep from updating the memory too much */
+				if (PushButtonState() == 0)
+				{
+					/* if the target temperature has changed, update the non-volatile stored value */
+					eeprom_update_word((uint16_t*)&nonVolTargetTemp, (uint16_t)_targetTemp);
+					/* if the duty cycle has changed, update the non-volatile stored value */
+					pwmDuty = Pwm_GetDuty(); 
+					eeprom_update_word(&nonVolPwmDuty, pwmDuty);
+				}					
                 break;
 
             case EventType_200ms:
 				ProcessLeds();
                 _UpdateTemperature();
-			    break;
+				
+				if (PushButtonCount(PushButton_UP) > PUSH_BUTTON_COUNT_THRESHOLD)
+				{
+					_HandlePushButtonUp();
+				}
+				
+				if (PushButtonCount(PushButton_DOWN) > PUSH_BUTTON_COUNT_THRESHOLD)
+				{
+					_HandlePushButtonDown();
+				}
+				break;
 
             case EventType_40ms:
+				everyOther40ms = !everyOther40ms;
+				
+				if (everyOther40ms)
+				{
+					if (PushButtonCount(PushButton_LEFT) > PUSH_BUTTON_COUNT_FAST_THRESHOLD)
+					{
+						_HandlePushButtonLeft();
+					}
+							
+					if (PushButtonCount(PushButton_RIGHT) > PUSH_BUTTON_COUNT_FAST_THRESHOLD)
+					{
+						_HandlePushButtonRight();
+					}
+				}							
                 break;
 
             case EventType_8ms:
@@ -94,14 +134,11 @@ void ProcessEvents(void)
                 buttonPressed = PushButtonsPressed();
                 if(buttonPressed & PushButton_UP)
 				{
-                    pwmDuty = Pwm_GetDuty();
-					pwmDuty = pwmDuty ? (pwmDuty << 1u) : 1u;
-					Pwm_SetDuty(pwmDuty);
+					_HandlePushButtonUp();
 				}
 				else if(buttonPressed & PushButton_DOWN)
 				{
-					pwmDuty = Pwm_GetDuty() >> 1u;
-					Pwm_SetDuty(pwmDuty);
+					_HandlePushButtonDown();
 				}
 
                 if(buttonPressed & PushButton_RIGHT & PushButton_LEFT)
@@ -109,12 +146,12 @@ void ProcessEvents(void)
 
                 }
                 else if(buttonPressed & PushButton_LEFT)
-                {
-                    --_targetTemp;
+                { 
+					_HandlePushButtonLeft();
                 }
                 else if(buttonPressed & PushButton_RIGHT)
                 {
-                    ++_targetTemp;
+					_HandlePushButtonRight();
                 }
                 break;
 
@@ -143,4 +180,29 @@ void _UpdateTemperature(void)
     success = LcdControl_WriteString(line1);
     success = LcdControl_SetCursorLocation(1, 0);
     success = LcdControl_WriteString(line2);
+}
+
+static inline void _HandlePushButtonUp(void)
+{
+	uint16_t pwmDuty;
+	pwmDuty = Pwm_GetDuty();
+	pwmDuty = pwmDuty ? (pwmDuty << 1u) : 1u;
+	Pwm_SetDuty(pwmDuty);
+}
+
+static inline void _HandlePushButtonDown(void)
+{
+	uint16_t pwmDuty;
+	pwmDuty = Pwm_GetDuty() >> 1u;
+	Pwm_SetDuty(pwmDuty);	
+}
+
+static inline void _HandlePushButtonLeft(void)
+{
+	--_targetTemp;	
+}
+
+static inline void _HandlePushButtonRight(void)
+{
+	++_targetTemp;
 }

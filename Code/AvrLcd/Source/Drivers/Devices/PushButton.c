@@ -25,6 +25,16 @@ static volatile uint8_t _pushButtonsPressed;
 /** Stores when the buttons have been released. */
 static volatile uint8_t _pushButtonsReleased;
 
+/* Stores the count for how long each push button has
+   been pressed */
+static uint8_t _pushButtonCount[NUM_PUSH_BUTTONS] = 
+{
+	0u,
+	0u,
+	0u,
+	0u
+}; 
+
 /**** LOCAL FUNCTION PROTOTYPES ****/
 
 /**** LOCAL FUNCTION DEFINITIONS ****/
@@ -33,6 +43,8 @@ static volatile uint8_t _pushButtonsReleased;
 */
 void CheckPushButtons(void)
 {
+	uint8_t counter;
+	PushButton_t button;
     volatile uint8_t currentPushButtons = PushButton_None;
 
     /* get the current state of the push buttons */
@@ -55,6 +67,24 @@ void CheckPushButtons(void)
 
 	/* store the current state as the previous for next time */
 	_previousPushButtons = currentPushButtons;
+	
+	/* update the button pressed counters */
+	for(counter = 0u; counter < NUM_PUSH_BUTTONS; ++counter)
+	{
+		button = (PushButton_t)(1<<counter);
+		if (button & _pushButtons)
+		{
+			if(_pushButtonCount[counter] < UINT8_MAX)
+			{
+				++_pushButtonCount[counter];
+			}
+		}
+		else
+		{
+			_pushButtonCount[counter] = 0u;
+		}
+		
+	}
 }
 
 uint8_t PushButtonsPressed( void)
@@ -72,3 +102,25 @@ uint8_t PushButtonState( void )
     return _pushButtons;
 }
 
+uint8_t PushButtonCount(PushButton_t button)
+{
+	uint8_t buttonCount = 0u;
+	uint8_t counter = UINT8_MAX;
+	
+	/* Start the counter at UINT8_MAX (255) so that it is equivilent to
+	   -1, so the first button (0x01) will increment counter once and
+	   counter = 0. This also guarantees that if Button_NONE (0x00) is 
+	   passed in, we will not try to read from the array */
+	while (button)
+	{
+		button >>= 1; 
+		++counter;
+	}
+	
+	if (counter < NUM_PUSH_BUTTONS)
+	{
+		buttonCount = _pushButtonCount[counter];
+	}
+	
+	return buttonCount;
+}
