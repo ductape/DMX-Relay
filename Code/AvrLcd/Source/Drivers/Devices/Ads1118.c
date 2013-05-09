@@ -116,14 +116,14 @@ void Ads1118_Config(
 		const AdsConfig_t *config)
 {
 	_configReg = 0u;
-	_configReg |= (AdsRegister)(config->inputSetting << AdsRegConfig_MUX0);
-	_configReg |= (AdsRegister)(config->fsRange << AdsRegConfig_PGA0);
-	_configReg |= (AdsRegister)(config->dataRate << AdsRegConfig_DR0);
-	_configReg |= (AdsRegister)(config->pullupEnable) << AdsRegConfig_PULLUP_EN;
-	_configReg |= (AdsRegister)(AdsRegConfig_MODE)			
+	_configReg |= ((AdsRegister)(config->inputSetting)) * AdsRegConfig_MUX0;
+	_configReg |= ((AdsRegister)(config->fsRange)) * AdsRegConfig_PGA0;
+	_configReg |= ((AdsRegister)(config->dataRate)) * AdsRegConfig_DR0;
+	_configReg |= ((AdsRegister)(config->pullupEnable)) * AdsRegConfig_PULLUP_EN;
+	_configReg |= ((AdsRegister)(AdsRegConfig_MODE));			
 }
 		
-void Ads1118_RegisterTempISR( (void*) callback)
+void Ads1118_RegisterTempISR( void* callback)
 {
 	_tempCallback = callback; 
 }
@@ -133,7 +133,7 @@ void Ads1118_ClearTempISR(void)
 	_tempCallback = NULL;
 }
 
-void Ads1118_RegisterAdcISR( (void*) callback)
+void Ads1118_RegisterAdcISR( void* callback)
 {
 	_adcCallback = callback;
 }
@@ -174,7 +174,7 @@ static void _ReadSensor(void)
 {
 	/* call SPI to read the sensor data */
 	/* Change between temp/adc if necessary */
-	/* start next sample convesion */
+	/* start next sample conversion */
 	/* call proper callback with data */
 	/* re-enable PCINT4 for the next sample */
 }

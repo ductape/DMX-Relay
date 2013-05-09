@@ -84,8 +84,10 @@ void Ads1118_Init(void);
 void Ads1118_Config(
 		const AdsConfig_t *config);
 		
-void Ads1118_RegisterTempISR( (void*) callback);
-void Ads1118_RegisterAdcISR( (void*) callback);
+void Ads1118_RegisterTempISR( void* callback);
+void Ads1118_ClearTempISR(void); 
+void Ads1118_RegisterAdcISR( void* callback);
+void Ads1118_ClearAdcISR(void); 
 		
 void Ads1118_Start(void); 
 void Ads1118_Stop(void); 
