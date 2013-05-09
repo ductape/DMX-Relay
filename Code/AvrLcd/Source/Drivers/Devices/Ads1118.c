@@ -8,87 +8,94 @@
 #include <ProjectTypes.h>
 #include <Ads1118.h>
 #include <SpiMaster.h>
+#include <avr/interrupt.h>
 #include <Gpio.h>
 
 
 /**** LOCAL DEFINITIONS ****/
 
 /** Stores all of the register settings for the ADS1118 configuration register */
-typedef enum AdsConfig
+typedef enum AdsRegConfig
 {
-    AdsConfig_SS = 0x8000,
-    AdsConfig__START_SINGLE_SHOT = AdsConfig_SS,
-    AdsConfig_MUX2 = 0x4000,
-    AdsConfig_MUX1 = 0x2000,
-    AdsConfig_MUX0 = 0x1000,
-    AdsConfig_MUX_0 = 0x0000,
-    AdsConfig_MUX_1 = AdsConfig_MUX0,
-    AdsConfig_MUX_2 = AdsConfig_MUX1,
-    AdsConfig_MUX_3 = AdsConfig_MUX0 | AdsConfig_MUX1,
-    AdsConfig_MUX_4 = AdsConfig_MUX2,
-    AdsConfig_MUX_5 = AdsConfig_MUX2 | AdsConfig_MUX0,
-    AdsConfig_MUX_6 = AdsConfig_MUX2 | AdsConfig_MUX1,
-    AdsConfig_MUX_7 = AdsConfig_MUX2 | AdsConfig_MUX1 | AdsConfig_MUX0,
-    AdsConfig__AINp_AIN0_AINn_AIN1 = AdsConfig_MUX_0,
-    AdsConfig__AINp_AIN0_AINn_AIN3 = AdsConfig_MUX_1,
-    AdsConfig__AINp_AIN1_AINn_AIN3 = AdsConfig_MUX_2,
-    AdsConfig__AINp_AIN2_AINn_AIN3 = AdsConfig_MUX_3,
-    AdsConfig__AINp_AIN0_AINn_GND  = AdsConfig_MUX_4,
-    AdsConfig__AINp_AIN1_AINn_GND  = AdsConfig_MUX_5,
-    AdsConfig__AINp_AIN2_AINn_GND  = AdsConfig_MUX_6,
-    AdsConfig__AINp_AIN3_AINn_GND  = AdsConfig_MUX_7,
-    AdsConfig_PGA2 = 0x0800,
-    AdsConfig_PGA1 = 0x0400,
-    AdsConfig_PGA0 = 0x0200,
-    AdsConfig_PGA_0 = 0x0000,
-    AdsConfig_PGA_1 = AdsConfig_PGA0,
-    AdsConfig_PGA_2 = AdsConfig_PGA1,
-    AdsConfig_PGA_3 = AdsConfig_PGA1 | AdsConfig_PGA0,
-    AdsConfig_PGA_4 = AdsConfig_PGA2,
-    AdsConfig_PGA_5 = AdsConfig_PGA2 | AdsConfig_PGA0,
-    AdsConfig_PGA_6 = AdsConfig_PGA2 | AdsConfig_PGA1,
-    AdsConfig_PGA_7 = AdsConfig_PGA2 | AdsConfig_PGA1 | AdsConfig_PGA0,
-    AdsConfig__FS_6114 = AdsConfig_PGA_0,
-    AdsConfig__FS_4096 = AdsConfig_PGA_1,
-    AdsConfig__FS_2048 = AdsConfig_PGA_2,
-    AdsConfig__FS_1024 = AdsConfig_PGA_3,
-    AdsConfig__FS_0512 = AdsConfig_PGA_4,
-    AdsConfig__FS_0256 = AdsConfig_PGA_5,
-    AdsConfig_MODE = 0x0100,
-    AdsConfig__SINGLE_SHOT_MODE = AdsConfig_MODE,
-    AdsConfig_DR2 = 0x0080,
-    AdsConfig_DR1 = 0x0040,
-    AdsConfig_DR0 = 0x0020,
-    AdsConfig_DR_0 = 0x0000,
-    AdsConfig_DR_1 = AdsConfig_DR0,
-    AdsConfig_DR_2 = AdsConfig_DR1,
-    AdsConfig_DR_3 = AdsConfig_DR1 | AdsConfig_DR0,
-    AdsConfig_DR_4 = AdsConfig_DR2,
-    AdsConfig_DR_5 = AdsConfig_DR2 | AdsConfig_DR0,
-    AdsConfig_DR_6 = AdsConfig_DR2 | AdsConfig_DR1,
-    AdsConfig_DR_7 = AdsConfig_DR2 | AdsConfig_DR1 | AdsConfig_DR0,
-    AdsConfig__DR_008SPS = AdsConfig_DR_0,
-    AdsConfig__DR_016SPS = AdsConfig_DR_1,
-    AdsConfig__DR_032SPS = AdsConfig_DR_2,
-    AdsConfig__DR_064SPS = AdsConfig_DR_3,
-    AdsConfig__DR_128SPS = AdsConfig_DR_4,
-    AdsConfig__DR_250SPS = AdsConfig_DR_5,
-    AdsConfig__DR_475SPS = AdsConfig_DR_6,
-    AdsConfig__DR_860SPS = AdsConfig_DR_7,
-    AdsConfig_TS_MODE = 0x0010,
-    AdsConfig__TEMPERATURE_MODE = AdsConfig_TS_MODE,
-    AdsConfig_PULLUP_EN = 0x0008,
-    AdsConfig_NOP = 0x0002
-} AdsConfig_t;
+    AdsRegConfig_SS = 0x8000,
+    AdsRegConfig__START_SINGLE_SHOT = AdsRegConfig_SS,
+    AdsRegConfig_MUX2 = 0x4000,
+    AdsRegConfig_MUX1 = 0x2000,
+    AdsRegConfig_MUX0 = 0x1000,
+    AdsRegConfig_MUX_0 = 0x0000,
+    AdsRegConfig_MUX_1 = AdsRegConfig_MUX0,
+    AdsRegConfig_MUX_2 = AdsRegConfig_MUX1,
+    AdsRegConfig_MUX_3 = AdsRegConfig_MUX0 | AdsRegConfig_MUX1,
+    AdsRegConfig_MUX_4 = AdsRegConfig_MUX2,
+    AdsRegConfig_MUX_5 = AdsRegConfig_MUX2 | AdsRegConfig_MUX0,
+    AdsRegConfig_MUX_6 = AdsRegConfig_MUX2 | AdsRegConfig_MUX1,
+    AdsRegConfig_MUX_7 = AdsRegConfig_MUX2 | AdsRegConfig_MUX1 | AdsRegConfig_MUX0,
+    AdsRegConfig__AINp_AIN0_AINn_AIN1 = AdsRegConfig_MUX_0,
+    AdsRegConfig__AINp_AIN0_AINn_AIN3 = AdsRegConfig_MUX_1,
+    AdsRegConfig__AINp_AIN1_AINn_AIN3 = AdsRegConfig_MUX_2,
+    AdsRegConfig__AINp_AIN2_AINn_AIN3 = AdsRegConfig_MUX_3,
+    AdsRegConfig__AINp_AIN0_AINn_GND  = AdsRegConfig_MUX_4,
+    AdsRegConfig__AINp_AIN1_AINn_GND  = AdsRegConfig_MUX_5,
+    AdsRegConfig__AINp_AIN2_AINn_GND  = AdsRegConfig_MUX_6,
+    AdsRegConfig__AINp_AIN3_AINn_GND  = AdsRegConfig_MUX_7,
+    AdsRegConfig_PGA2 = 0x0800,
+    AdsRegConfig_PGA1 = 0x0400,
+    AdsRegConfig_PGA0 = 0x0200,
+    AdsRegConfig_PGA_0 = 0x0000,
+    AdsRegConfig_PGA_1 = AdsRegConfig_PGA0,
+    AdsRegConfig_PGA_2 = AdsRegConfig_PGA1,
+    AdsRegConfig_PGA_3 = AdsRegConfig_PGA1 | AdsRegConfig_PGA0,
+    AdsRegConfig_PGA_4 = AdsRegConfig_PGA2,
+    AdsRegConfig_PGA_5 = AdsRegConfig_PGA2 | AdsRegConfig_PGA0,
+    AdsRegConfig_PGA_6 = AdsRegConfig_PGA2 | AdsRegConfig_PGA1,
+    AdsRegConfig_PGA_7 = AdsRegConfig_PGA2 | AdsRegConfig_PGA1 | AdsRegConfig_PGA0,
+    AdsRegConfig__FS_6114 = AdsRegConfig_PGA_0,
+    AdsRegConfig__FS_4096 = AdsRegConfig_PGA_1,
+    AdsRegConfig__FS_2048 = AdsRegConfig_PGA_2,
+    AdsRegConfig__FS_1024 = AdsRegConfig_PGA_3,
+    AdsRegConfig__FS_0512 = AdsRegConfig_PGA_4,
+    AdsRegConfig__FS_0256 = AdsRegConfig_PGA_5,
+    AdsRegConfig_MODE = 0x0100,
+    AdsRegConfig__SINGLE_SHOT_MODE = AdsRegConfig_MODE,
+    AdsRegConfig_DR2 = 0x0080,
+    AdsRegConfig_DR1 = 0x0040,
+    AdsRegConfig_DR0 = 0x0020,
+    AdsRegConfig_DR_0 = 0x0000,
+    AdsRegConfig_DR_1 = AdsRegConfig_DR0,
+    AdsRegConfig_DR_2 = AdsRegConfig_DR1,
+    AdsRegConfig_DR_3 = AdsRegConfig_DR1 | AdsRegConfig_DR0,
+    AdsRegConfig_DR_4 = AdsRegConfig_DR2,
+    AdsRegConfig_DR_5 = AdsRegConfig_DR2 | AdsRegConfig_DR0,
+    AdsRegConfig_DR_6 = AdsRegConfig_DR2 | AdsRegConfig_DR1,
+    AdsRegConfig_DR_7 = AdsRegConfig_DR2 | AdsRegConfig_DR1 | AdsRegConfig_DR0,
+    AdsRegConfig__DR_008SPS = AdsRegConfig_DR_0,
+    AdsRegConfig__DR_016SPS = AdsRegConfig_DR_1,
+    AdsRegConfig__DR_032SPS = AdsRegConfig_DR_2,
+    AdsRegConfig__DR_064SPS = AdsRegConfig_DR_3,
+    AdsRegConfig__DR_128SPS = AdsRegConfig_DR_4,
+    AdsRegConfig__DR_250SPS = AdsRegConfig_DR_5,
+    AdsRegConfig__DR_475SPS = AdsRegConfig_DR_6,
+    AdsRegConfig__DR_860SPS = AdsRegConfig_DR_7,
+    AdsRegConfig_TS_MODE = 0x0010,
+    AdsRegConfig__TEMPERATURE_MODE = AdsRegConfig_TS_MODE,
+    AdsRegConfig_PULLUP_EN = 0x0008,
+    AdsRegConfig_NOP = 0x0002
+} AdsRegConfig_t;
+
+/** Defines the variable type to store the register bits in */
+typedef uint16_t AdsRegister; 
 
 /**** LOCAL CONSTANTS ****/
 
 /**** LOCAL VARIABLES ****/
-static uint16_t _configReg;
+static AdsRegister _configReg;
+static TemperatureDataCallback _tempCallback = NULL;
+static AdcDataCallback _adcCallback = NULL;
 
 /**** LOCAL FUNCTION PROTOTYPES ****/
-uint16_t _TransferReg(
-        uint16_t regWrite);
+static uint16_t _TransferReg(
+        AdsRegister regWrite);
+static void _ReadSensor(void); 
 
 /**** LOCAL FUNCTIONS ****/
 
@@ -99,27 +106,58 @@ void Ads1118_Init(void)
     SET_THERM_SS;
 
     /* initialize the config register */
-    _configReg = (AdsConfig__AINp_AIN2_AINn_AIN3 | AdsConfig__FS_0256 | AdsConfig__DR_008SPS);
+    _configReg = (AdsRegConfig__AINp_AIN2_AINn_AIN3 | AdsRegConfig__FS_0256 | AdsRegConfig__DR_008SPS);
 
     /* use the NOP to save the reg write */
-    _TransferReg(_configReg | AdsConfig_NOP);
+    _TransferReg(_configReg | AdsRegConfig_NOP);
 }
 
-
-void Ads1118_Read(
-        uint16_t *thermocouple,
-        uint16_t *coldJunction)
+void Ads1118_Config(
+		const AdsConfig_t *config)
 {
-    /* TODO: spg - how do you read temperature and the thermocouple
-             at the "same" time? Does there need to be a delay between
-             switching between temperature and ADC configs? */
+	_configReg = 0u;
+	_configReg |= (AdsRegister)(config->inputSetting << AdsRegConfig_MUX0);
+	_configReg |= (AdsRegister)(config->fsRange << AdsRegConfig_PGA0);
+	_configReg |= (AdsRegister)(config->dataRate << AdsRegConfig_DR0);
+	_configReg |= (AdsRegister)(config->pullupEnable) << AdsRegConfig_PULLUP_EN;
+	_configReg |= (AdsRegister)(AdsRegConfig_MODE)			
+}
+		
+void Ads1118_RegisterTempISR( (void*) callback)
+{
+	_tempCallback = callback; 
 }
 
+void Ads1118_ClearTempISR(void)
+{
+	_tempCallback = NULL;
+}
 
+void Ads1118_RegisterAdcISR( (void*) callback)
+{
+	_adcCallback = callback;
+}
+
+void Ads1118_ClearAdcISR(void)
+{
+	_adcCallback = NULL;
+}
+
+void Ads1118_Start(void)
+{
+	/* send config + start sample + nop */
+	/* Set DRDY (MISO) as input */
+	/* enable PCINT4 */
+}
+
+void Ads1118_Stop(void)
+{
+	/* disable PCINT4 */
+}
 
 /** Writes and reads a register from the ADS1118 */
-uint16_t _TransferReg(
-        uint16_t regWrite)
+static uint16_t _TransferReg(
+        AdsRegister regWrite)
 {
     uint16_t regRead;
 
@@ -130,4 +168,19 @@ uint16_t _TransferReg(
     SET_THERM_SS;
 
     return regRead;
+}
+
+static void _ReadSensor(void)
+{
+	/* call SPI to read the sensor data */
+	/* Change between temp/adc if necessary */
+	/* start next sample convesion */
+	/* call proper callback with data */
+	/* re-enable PCINT4 for the next sample */
+}
+
+ISR(PCINT0_vect)
+{
+	/* disable PCINT4 */
+	/* post event for handling read sensor */
 }
