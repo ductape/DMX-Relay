@@ -22,10 +22,6 @@
 #define TICKS_PER_1S 0u
 
 /**** LOCAL CONSTANTS ****/
-static const Event_t EVENT_8MS  = {EventType_8ms,  0u};
-static const Event_t EVENT_40MS = {EventType_40ms, 0u};
-static const Event_t EVENT_200MS = {EventType_200ms, 0u};
-static const Event_t EVENT_1S   = {EventType_1s,   0u};
 
 /**** LOCAL VARIABLES ****/
 /** Is set each time that the timer ticks. */
@@ -71,22 +67,22 @@ void ProcessTick(void)
 		ticked = false;
 		
         /* with an 8ms tick, enqueue an event every tick */
-        EnqueueEvent(&EVENT_8MS);
+        EnqueueEvent(EventType_8ms);
 
 	    if ((tickCount % TICKS_PER_40MS) == 0)
 	    {
-            EnqueueEvent(&EVENT_40MS);
+            EnqueueEvent(EventType_40ms);
 	    }
 
 	    if ((tickCount % TICKS_PER_200MS) == 0)
 	    {
-            EnqueueEvent(&EVENT_200MS);
+            EnqueueEvent(EventType_200ms);
 	    }
 
         /* no modulo here because the tick counter rolls over at 1s */
         if (tickCount == TICKS_PER_1S)
 	    {
-		    EnqueueEvent(&EVENT_1S);
+		    EnqueueEvent(EventType_1s);
 	    }
 
         /* reset the tick counter at 125 so that it resets once per second */

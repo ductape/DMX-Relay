@@ -16,6 +16,8 @@
 #define LCD_BUFFER_LENGTH   (32u)
 
 /**** LOCAL VARIABLES ****/
+
+#ifndef NO_BUFFERING
 uint8_t _bufferData[LCD_BUFFER_LENGTH];
 
 static CircularBuffer_t _buffer =
@@ -26,14 +28,9 @@ static CircularBuffer_t _buffer =
     LCD_BUFFER_LENGTH,
     _bufferData
 };
+#endif
 
 /**** LOCAL CONSTANTS ****/
-/** Defines an event to process for the LCD controller */
-static const Event_t _event =
-{
-    EventType_LCD,
-    0u
-};
 
 /**** LOCAL FUNCTION PROTOTYPES ****/
 
@@ -65,7 +62,7 @@ bool LcdControl_WriteString(const char* string)
 
     if (success)
     {
-        EnqueueEvent(&_event);
+        EnqueueEvent(EventType_LCD);
     }
 #else
     for (index = 0u; index < strlength; ++index)
@@ -112,7 +109,7 @@ void LcdControl_ProcessLcd(void)
 {
     uint8_t character;
     bool success;
-
+#ifndef NO_BUFFERING
     if (_buffer.numberInBuffer > 0)
     {
         success = CircularBuffer_Get(&character, &_buffer);
@@ -122,8 +119,9 @@ void LcdControl_ProcessLcd(void)
 
             if (_buffer.numberInBuffer > 0)
             {
-                EnqueueEvent(&_event);
+                EnqueueEvent(EventType_LCD);
             }
         }
     }
+#endif
 }

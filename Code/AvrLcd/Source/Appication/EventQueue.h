@@ -24,16 +24,21 @@ typedef enum EventType
 	EventType_Last
 } EventType_t;
 
+/** Defines an event callback */
+typedef void (*EventCallback_t)(void);
+
 /* define an event structure to hold event data */
 typedef struct Event
 {
 	EventType_t eventType;
-	uint8_t eventData;
+	EventCallback_t eventCallback;
 } Event_t;
 
 /**** PUBLIC FUNCTIONS ****/
-bool EnqueueEvent(const Event_t *event);
+bool EnqueueEvent(EventType_t eventType);
 bool DequeueEvent(Event_t *event);
+
+bool EnqueCallback(EventCallback_t callback); 
 
 bool EventQueueFull(void);
 bool EventQueueEmpty(void);

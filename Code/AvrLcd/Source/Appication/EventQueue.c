@@ -6,6 +6,7 @@
 
 #include "ProjectTypes.h"
 #include "EventQueue.h"
+#include <Util/atomic.h>
 
 /**** PUBLIC VARIABLES ****/
 
@@ -27,26 +28,35 @@ static uint8_t  _numberInQueue     = 0u;
 
 /** What happens if this is called from an ISR while its being
     called from application space? */
-bool EnqueueEvent(const Event_t *event)
+bool EnqueueEvent(EventType_t eventType)
 {
 	bool couldBeAdded = false;
 
-	if (EventQueueFull() == false)
-	{
-        _queue[_end].eventType = event->eventType;
-	    _queue[_end].eventData = event->eventData;
-
-	    if (++_end >= QUEUE_SIZE)
+    ATOMIC_BLOCK(ATOMIC_FORCEON)
+    {
+	    if (EventQueueFull() == false)
 	    {
-		    _end = 0;
-	    }
-	    _numberInQueue++;
-		couldBeAdded = true;
-	}
+            _queue[_end].eventType = eventType;
+	        _queue[_end].eventCallback = NULL;
 
+	        if (++_end >= QUEUE_SIZE)
+	        {
+		        _end = 0;
+	        }
+	        _numberInQueue++;
+		    couldBeAdded = true;
+	    }
+    }
 	return couldBeAdded;
 }
 
+/** Dequeues events from the event queue and returns the
+    event data for processing.  
+    
+    \NOTE never call this from an interrupt! As long
+    as this function is never called from an interrupt
+    atomic operations are not necessary 
+*/
 bool DequeueEvent(Event_t *event)
 {
 	bool couldBeRemoved = false;
@@ -54,7 +64,7 @@ bool DequeueEvent(Event_t *event)
 	if (EventQueueEmpty() == false)
 	{
 		event->eventType = _queue[_start].eventType;
-		event->eventData = _queue[_start].eventData;
+		event->eventCallback = _queue[_start].eventCallback;
 
 		if (++_start >= QUEUE_SIZE)
 		{
@@ -65,6 +75,30 @@ bool DequeueEvent(Event_t *event)
 	}
 
 	return couldBeRemoved;
+}
+
+/** Adds an event with an event callback to be processed. 
+*/
+bool EnqueCallback(EventCallback_t callback)
+{
+    bool couldBeAdded = false;
+
+    ATOMIC_BLOCK(ATOMIC_FORCEON)
+    {
+        if (EventQueueFull() == false)
+        {
+            _queue[_end].eventType = EventType_Invalid;
+            _queue[_end].eventCallback = callback;
+
+            if (++_end >= QUEUE_SIZE)
+            {
+                _end = 0;
+            }
+            _numberInQueue++;
+            couldBeAdded = true;
+        }
+    }
+    return couldBeAdded;    
 }
 
 /** The queue is full when there are SIZE - 1 elements. If there were

@@ -35,7 +35,7 @@
 /**** LOCAL CONSTANTS ****/
 
 /**** LOCAL VARIABLES ****/
-static Event_t _eventToProcess = {EventType_Invalid, 0u};
+static Event_t _eventToProcess = {EventType_Invalid, NULL};
 static int16_t _targetTemp = 37;
 static int16_t _actualTemperature = -37;
 
