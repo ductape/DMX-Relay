@@ -7,3 +7,6 @@ Debug/
 
 # ignore the log file
 Code/*.csv
+
+# ignore Scilab backup files
+*~
