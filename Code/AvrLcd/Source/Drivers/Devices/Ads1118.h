@@ -71,25 +71,13 @@ typedef struct AdsConfig
 	bool sampleTemperature; /** Selects if the temperature should also be read, i.e. for cold junction temperature compensation */
 } AdsConfig_t;
 
-/** Defines a callback for the temperature data from the ADS1118 */
-typedef void (*TemperatureDataCallback)(int16_t temperatureData);
-
-/** Defines a callback for the ADC data from the ADS1118 */
-typedef void (*AdcDataCallback)(int16_t adcData);
-
 /**** PUBLIC CONSTANTS ******/
 
 /**** PUBLIC FUNCTIONS ******/
 void Ads1118_Init(void);
 void Ads1118_Config(
 		const AdsConfig_t *config);
-		
-void Ads1118_RegisterTempISR( void* callback);
-void Ads1118_ClearTempISR(void); 
-void Ads1118_RegisterAdcISR( void* callback);
-void Ads1118_ClearAdcISR(void); 
-		
-void Ads1118_Start(void); 
-void Ads1118_Stop(void); 
+				
+bool Ads1118_Read(uint16_t *result); 
 
 #endif /* ADS1118_H_ */

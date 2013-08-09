@@ -89,13 +89,10 @@ typedef uint16_t AdsRegister;
 
 /**** LOCAL VARIABLES ****/
 static AdsRegister _configReg;
-static TemperatureDataCallback _tempCallback = NULL;
-static AdcDataCallback _adcCallback = NULL;
 
 /**** LOCAL FUNCTION PROTOTYPES ****/
 static uint16_t _TransferReg(
         AdsRegister regWrite);
-static void _ReadSensor(void); 
 
 /**** LOCAL FUNCTIONS ****/
 
@@ -120,39 +117,16 @@ void Ads1118_Config(
 	_configReg |= ((AdsRegister)(config->fsRange)) * AdsRegConfig_PGA0;
 	_configReg |= ((AdsRegister)(config->dataRate)) * AdsRegConfig_DR0;
 	_configReg |= ((AdsRegister)(config->pullupEnable)) * AdsRegConfig_PULLUP_EN;
-	_configReg |= ((AdsRegister)(AdsRegConfig_MODE));			
+	_configReg |= ((AdsRegister)(AdsRegConfig_MODE));	
+	
+	(void) _TransferReg(_configReg);		
 }
 		
-void Ads1118_RegisterTempISR( void* callback)
-{
-	_tempCallback = callback; 
-}
 
-void Ads1118_ClearTempISR(void)
+bool Ads1118_Read(uint16_t *result)
 {
-	_tempCallback = NULL;
-}
-
-void Ads1118_RegisterAdcISR( void* callback)
-{
-	_adcCallback = callback;
-}
-
-void Ads1118_ClearAdcISR(void)
-{
-	_adcCallback = NULL;
-}
-
-void Ads1118_Start(void)
-{
-	/* send config + start sample + nop */
-	/* Set DRDY (MISO) as input */
-	/* enable PCINT4 */
-}
-
-void Ads1118_Stop(void)
-{
-	/* disable PCINT4 */
+	(*result) = _TransferReg((AdsRegister)(0xFFFF));
+	return true; 
 }
 
 /** Writes and reads a register from the ADS1118 */
@@ -165,22 +139,10 @@ static uint16_t _TransferReg(
     regRead = (uint16_t)SpiMaster_Transfer((uint8_t)(regWrite>>8u));
     regRead = (uint16_t)(regRead<<8u);
     regRead += (uint16_t)SpiMaster_Transfer((uint8_t)(regWrite));
+	(void) SpiMaster_Transfer(0xFF);
+	(void) SpiMaster_Transfer(0xFF);
     SET_THERM_SS;
 
     return regRead;
 }
 
-static void _ReadSensor(void)
-{
-	/* call SPI to read the sensor data */
-	/* Change between temp/adc if necessary */
-	/* start next sample conversion */
-	/* call proper callback with data */
-	/* re-enable PCINT4 for the next sample */
-}
-
-ISR(PCINT0_vect)
-{
-	/* disable PCINT4 */
-	/* post event for handling read sensor */
-}
