@@ -57,6 +57,7 @@ typedef enum AdsRegConfig
     AdsRegConfig__FS_0256 = AdsRegConfig_PGA_5,
     AdsRegConfig_MODE = 0x0100,
     AdsRegConfig__SINGLE_SHOT_MODE = AdsRegConfig_MODE,
+	AdsRegConfig__CONTINUOUS_CONVERT = 0x0000,
     AdsRegConfig_DR2 = 0x0080,
     AdsRegConfig_DR1 = 0x0040,
     AdsRegConfig_DR0 = 0x0020,
@@ -78,12 +79,19 @@ typedef enum AdsRegConfig
     AdsRegConfig__DR_860SPS = AdsRegConfig_DR_7,
     AdsRegConfig_TS_MODE = 0x0010,
     AdsRegConfig__TEMPERATURE_MODE = AdsRegConfig_TS_MODE,
+	AdsRegConfig__ADC_MODE = 0x0000,
     AdsRegConfig_PULLUP_EN = 0x0008,
-    AdsRegConfig_NOP = 0x0002
+    AdsRegConfig_NOP = 0x0002,
+	AdsRegConfig_UNUSED = 0x0001
 } AdsRegConfig_t;
 
 /** Defines the variable type to store the register bits in */
-typedef uint16_t AdsRegister; 
+typedef uint16_t AdsRegister;
+
+/** Defines the conversion constant for converting the cold junction compensation reading
+    to degrees Celsius.  The actual factor is divide by 128 (2^7), but a logical shift by
+    n where factor = 2^n is a faster operation */
+#define CJ_COMP_FACTOR      (7)
 
 /**** LOCAL CONSTANTS ****/
 
@@ -93,6 +101,8 @@ static AdsRegister _configReg;
 /**** LOCAL FUNCTION PROTOTYPES ****/
 static uint16_t _TransferReg(
         AdsRegister regWrite);
+static inline uint16_t _WriteReg(
+		AdsRegister regWrite);
 
 /**** LOCAL FUNCTIONS ****/
 
@@ -104,29 +114,50 @@ void Ads1118_Init(void)
 
     /* initialize the config register */
     _configReg = (AdsRegConfig__AINp_AIN2_AINn_AIN3 | AdsRegConfig__FS_0256 | AdsRegConfig__DR_008SPS);
-
-    /* use the NOP to save the reg write */
-    _TransferReg(_configReg | AdsRegConfig_NOP);
+    (void) _WriteReg(_configReg);
 }
 
 void Ads1118_Config(
 		const AdsConfig_t *config)
 {
 	_configReg = 0u;
+	_configReg |= ((AdsRegister)(AdsRegConfig__START_SINGLE_SHOT));
 	_configReg |= ((AdsRegister)(config->inputSetting)) * AdsRegConfig_MUX0;
 	_configReg |= ((AdsRegister)(config->fsRange)) * AdsRegConfig_PGA0;
+	_configReg |= ((AdsRegister)(AdsRegConfig__CONTINUOUS_CONVERT));
 	_configReg |= ((AdsRegister)(config->dataRate)) * AdsRegConfig_DR0;
+	_configReg |= ((AdsRegister)(config->sampleTemperature)) * AdsRegConfig__TEMPERATURE_MODE;
 	_configReg |= ((AdsRegister)(config->pullupEnable)) * AdsRegConfig_PULLUP_EN;
-	_configReg |= ((AdsRegister)(AdsRegConfig_MODE));	
-	
-	(void) _TransferReg(_configReg);		
+	(void) _WriteReg(_configReg);
 }
-		
 
+/**
+    Reads the current value in the device conversion register.
+
+    \note The type of data in the result depends on the chip's
+          configuration.
+
+    \param[out] result - the value in the chip's conversion register
+    \returns True if the conversion register could be read
+*/
 bool Ads1118_Read(uint16_t *result)
 {
 	(*result) = _TransferReg((AdsRegister)(0xFFFF));
-	return true; 
+	return true;
+}
+
+/**
+    Converts the cjTemp from the device counts to
+    degrees Celsius
+
+    \param[in] cjTemp - the cold junction temperature in device counts
+    \returns the cold junction temperature in Celsius
+*/
+static int16_t Ads1118_Cj2Celsius(uint16_t cjTemp)
+{
+    int16_t temperature;
+    temperature = ((int16_t)(cjTemp)) >> CJ_COMP_FACTOR;
+    return temperature;
 }
 
 /** Writes and reads a register from the ADS1118 */
@@ -146,3 +177,11 @@ static uint16_t _TransferReg(
     return regRead;
 }
 
+/** Sets the NOP flag of the register so that it will save
+    the register write */
+static inline uint16_t _WriteReg(
+		AdsRegister regWrite)
+{
+	/* use the NOP to save the reg write */
+	return _TransferReg(regWrite | AdsRegConfig_NOP);
+}

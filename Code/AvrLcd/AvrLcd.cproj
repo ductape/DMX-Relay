@@ -147,6 +147,9 @@
     <Compile Include="Include\ProjectTypes.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="Include\Temperature.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="Include\ThermocoupleKTypeTable.h">
       <SubType>compile</SubType>
     </Compile>

@@ -54,18 +54,18 @@ void ProcessEvents(void)
     uint8_t buttonPressed;
     uint16_t pwmDuty;
 	static int16_t adcCount = -826;
-	static int16_t EEMEM nonVolTargetTemp = 521l; 
-	static uint16_t EEMEM nonVolPwmDuty = PWM_MAX_DUTY; 
-	static bool everyOther40ms; 
-	
+	static int16_t EEMEM nonVolTargetTemp = 521l;
+	static uint16_t EEMEM nonVolPwmDuty = PWM_MAX_DUTY;
+	static bool everyOther40ms;
+
 	/* Initialize the EEPROM memories */
-	static bool firstTime = true; 
+	static bool firstTime = true;
 	if (firstTime)
 	{
-		firstTime = false; 
+		firstTime = false;
 		_targetTemp = (int16_t)eeprom_read_word((uint16_t*)&nonVolTargetTemp);
 		pwmDuty = eeprom_read_word(&nonVolPwmDuty);
-		Pwm_SetDuty(pwmDuty); 
+		Pwm_SetDuty(pwmDuty);
 	}
 
     /* process the timer ticks */
@@ -79,33 +79,33 @@ void ProcessEvents(void)
         switch(_eventToProcess.eventType)
         {
             case EventType_1s:
-				_actualTemperature = ThermConvert_Fahrenheit(adcCount++, 50);
+				_actualTemperature = ThermConvert_Convert(adcCount++, 10, TemperatureUnit_Fahrenheit);
 				if (adcCount > 7026)
 				{
-					adcCount = -826; 
-				}					 
-				
-				/* Only update the non-volatile memory if the push buttons aren't pressed to 
+					adcCount = -826;
+				}
+
+				/* Only update the non-volatile memory if the push buttons aren't pressed to
 				   keep from updating the memory too much */
 				if (PushButtonState() == 0)
 				{
 					/* if the target temperature has changed, update the non-volatile stored value */
 					eeprom_update_word((uint16_t*)&nonVolTargetTemp, (uint16_t)_targetTemp);
 					/* if the duty cycle has changed, update the non-volatile stored value */
-					pwmDuty = Pwm_GetDuty(); 
+					pwmDuty = Pwm_GetDuty();
 					eeprom_update_word(&nonVolPwmDuty, pwmDuty);
-				}					
+				}
                 break;
 
             case EventType_200ms:
 				ProcessLeds();
                 _UpdateTemperature();
-				
+
 				if (PushButtonCount(PushButton_UP) > PUSH_BUTTON_COUNT_THRESHOLD)
 				{
 					_HandlePushButtonUp();
 				}
-				
+
 				if (PushButtonCount(PushButton_DOWN) > PUSH_BUTTON_COUNT_THRESHOLD)
 				{
 					_HandlePushButtonDown();
@@ -114,19 +114,19 @@ void ProcessEvents(void)
 
             case EventType_40ms:
 				everyOther40ms = !everyOther40ms;
-				
+
 				if (everyOther40ms)
 				{
 					if (PushButtonCount(PushButton_LEFT) > PUSH_BUTTON_COUNT_FAST_THRESHOLD)
 					{
 						_HandlePushButtonLeft();
 					}
-							
+
 					if (PushButtonCount(PushButton_RIGHT) > PUSH_BUTTON_COUNT_FAST_THRESHOLD)
 					{
 						_HandlePushButtonRight();
 					}
-				}							
+				}
                 break;
 
             case EventType_8ms:
@@ -146,7 +146,7 @@ void ProcessEvents(void)
 
                 }
                 else if(buttonPressed & PushButton_LEFT)
-                { 
+                {
 					_HandlePushButtonLeft();
                 }
                 else if(buttonPressed & PushButton_RIGHT)
@@ -194,12 +194,12 @@ static inline void _HandlePushButtonDown(void)
 {
 	uint16_t pwmDuty;
 	pwmDuty = Pwm_GetDuty() >> 1u;
-	Pwm_SetDuty(pwmDuty);	
+	Pwm_SetDuty(pwmDuty);
 }
 
 static inline void _HandlePushButtonLeft(void)
 {
-	--_targetTemp;	
+	--_targetTemp;
 }
 
 static inline void _HandlePushButtonRight(void)

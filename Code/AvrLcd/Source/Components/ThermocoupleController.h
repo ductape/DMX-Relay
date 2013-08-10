@@ -11,14 +11,10 @@
 #define THERMOCOUPLECONTROLLER_H_
 
 #include <ProjectTypes.h>
+#include <Temperature.h>
 
 /**** PUBLIC DEFINITIONS ****/
 
-typedef enum TemperatureUnit
-{
-	TemperatureUnit_Celsius,
-	TemperatureUnit_Fahrenheit
-} TemperatureUnit_t;
 
 typedef struct Temperature
 {
