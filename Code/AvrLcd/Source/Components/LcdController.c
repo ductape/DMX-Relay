@@ -107,10 +107,10 @@ bool LcdControl_ClearDisplay(void)
 
 void LcdControl_ProcessLcd(void)
 {
-    bool success;
 #ifndef NO_BUFFERING
+    bool success;
     uint8_t character;
-	
+
     if (_buffer.numberInBuffer > 0)
     {
         success = CircularBuffer_Get(&character, &_buffer);

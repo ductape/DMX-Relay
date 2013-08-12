@@ -57,7 +57,7 @@ typedef enum AdsRegConfig
     AdsRegConfig__FS_0256 = AdsRegConfig_PGA_5,
     AdsRegConfig_MODE = 0x0100,
     AdsRegConfig__SINGLE_SHOT_MODE = AdsRegConfig_MODE,
-	AdsRegConfig__CONTINUOUS_CONVERT = 0x0000,
+    AdsRegConfig__CONTINUOUS_CONVERT = 0x0000,
     AdsRegConfig_DR2 = 0x0080,
     AdsRegConfig_DR1 = 0x0040,
     AdsRegConfig_DR0 = 0x0020,
@@ -79,10 +79,10 @@ typedef enum AdsRegConfig
     AdsRegConfig__DR_860SPS = AdsRegConfig_DR_7,
     AdsRegConfig_TS_MODE = 0x0010,
     AdsRegConfig__TEMPERATURE_MODE = AdsRegConfig_TS_MODE,
-	AdsRegConfig__ADC_MODE = 0x0000,
+    AdsRegConfig__ADC_MODE = 0x0000,
     AdsRegConfig_PULLUP_EN = 0x0008,
     AdsRegConfig_NOP = 0x0002,
-	AdsRegConfig_UNUSED = 0x0001
+    AdsRegConfig_UNUSED = 0x0001
 } AdsRegConfig_t;
 
 /** Defines the variable type to store the register bits in */
@@ -102,7 +102,7 @@ static AdsRegister _configReg;
 static uint16_t _TransferReg(
         AdsRegister regWrite);
 static inline uint16_t _WriteReg(
-		AdsRegister regWrite);
+        AdsRegister regWrite);
 
 /**** LOCAL FUNCTIONS ****/
 
@@ -118,17 +118,17 @@ void Ads1118_Init(void)
 }
 
 void Ads1118_Config(
-		const AdsConfig_t *config)
+        const AdsConfig_t *config)
 {
-	_configReg = 0u;
-	_configReg |= ((AdsRegister)(AdsRegConfig__START_SINGLE_SHOT));
-	_configReg |= ((AdsRegister)(config->inputSetting)) * AdsRegConfig_MUX0;
-	_configReg |= ((AdsRegister)(config->fsRange)) * AdsRegConfig_PGA0;
-	_configReg |= ((AdsRegister)(AdsRegConfig__CONTINUOUS_CONVERT));
-	_configReg |= ((AdsRegister)(config->dataRate)) * AdsRegConfig_DR0;
-	_configReg |= ((AdsRegister)(config->sampleTemperature)) * AdsRegConfig__TEMPERATURE_MODE;
-	_configReg |= ((AdsRegister)(config->pullupEnable)) * AdsRegConfig_PULLUP_EN;
-	(void) _WriteReg(_configReg);
+    _configReg = 0u;
+    _configReg |= ((AdsRegister)(AdsRegConfig__START_SINGLE_SHOT));
+    _configReg |= ((AdsRegister)(config->inputSetting)) * AdsRegConfig_MUX0;
+    _configReg |= ((AdsRegister)(config->fsRange)) * AdsRegConfig_PGA0;
+    _configReg |= ((AdsRegister)(AdsRegConfig__CONTINUOUS_CONVERT));
+    _configReg |= ((AdsRegister)(config->dataRate)) * AdsRegConfig_DR0;
+    _configReg |= ((AdsRegister)(config->sampleTemperature)) * AdsRegConfig__TEMPERATURE_MODE;
+    _configReg |= ((AdsRegister)(config->pullupEnable)) * AdsRegConfig_PULLUP_EN;
+    (void) _WriteReg(_configReg);
 }
 
 /**
@@ -142,8 +142,20 @@ void Ads1118_Config(
 */
 bool Ads1118_Read(uint16_t *result)
 {
-	(*result) = _TransferReg((AdsRegister)(0xFFFF));
-	return true;
+    static int16_t temp = 0xFFFF;
+#if 1 /* use sensor */
+    (*result) = _TransferReg((AdsRegister)(0xFFFF));
+#else /* use hard coded */
+    if (_configReg & AdsRegConfig__TEMPERATURE_MODE)
+    {
+        (*result) = 0x0A84;
+    }
+    else
+    {
+        (*result) = temp++;
+    }
+#endif
+    return true;
 }
 
 /**
@@ -153,7 +165,7 @@ bool Ads1118_Read(uint16_t *result)
     \param[in] cjTemp - the cold junction temperature in device counts
     \returns the cold junction temperature in Celsius
 */
-static int16_t Ads1118_Cj2Celsius(uint16_t cjTemp)
+int16_t Ads1118_Cj2Celsius(uint16_t cjTemp)
 {
     int16_t temperature;
     temperature = ((int16_t)(cjTemp)) >> CJ_COMP_FACTOR;
@@ -170,8 +182,8 @@ static uint16_t _TransferReg(
     regRead = (uint16_t)SpiMaster_Transfer((uint8_t)(regWrite>>8u));
     regRead = (uint16_t)(regRead<<8u);
     regRead += (uint16_t)SpiMaster_Transfer((uint8_t)(regWrite));
-	(void) SpiMaster_Transfer(0xFF);
-	(void) SpiMaster_Transfer(0xFF);
+    (void) SpiMaster_Transfer(0xFF);
+    (void) SpiMaster_Transfer(0xFF);
     SET_THERM_SS;
 
     return regRead;
@@ -180,8 +192,8 @@ static uint16_t _TransferReg(
 /** Sets the NOP flag of the register so that it will save
     the register write */
 static inline uint16_t _WriteReg(
-		AdsRegister regWrite)
+        AdsRegister regWrite)
 {
-	/* use the NOP to save the reg write */
-	return _TransferReg(regWrite | AdsRegConfig_NOP);
+    /* use the NOP to save the reg write */
+    return _TransferReg(regWrite | AdsRegConfig_NOP);
 }

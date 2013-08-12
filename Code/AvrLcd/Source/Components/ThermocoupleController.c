@@ -7,10 +7,13 @@
  */
 
 #include "ThermocoupleController.h"
-#include <ThermocoupleKTypeTable.h>
+#include <ThermocoupleConversion.h>
 #include <Ads1118.h>
 
 /**** LOCAL DEFINITIONS ****/
+
+/** Defines the number of times the sample type should be sampled */
+#define NUM_SAMPLES    (2u)
 
 /**** LOCAL CONSTANTS ****/
 
@@ -32,8 +35,18 @@ static Temperature_t _temperature =
         .ambient = 0,
         .temp1 = 0,
         .temp2 = 0,
-        .units = TemperatureUnit_Celsius
+        .units = TemperatureUnit_Fahrenheit
     };
+
+/** Stores the raw data from the ADS1118 */
+static ThermConv_t _rawData =
+    {
+        .cjComp = 0,
+        .rawAdc = 0
+    };
+
+/** Stores the number of times the current mode has been sampled */
+static uint16_t _samples = 0u;
 
 /**** LOCAL FUNCTION PROTOTYPES ****/
 static bool _ReadSensor(void);
@@ -58,24 +71,52 @@ TemperatureUnit_t ThermocoupleController_GetTempUnits(void)
 
 bool ThermocoupleController_Read(Temperature_t *temperature)
 {
-    bool newTemperatureAvailable = false;
+    bool newTemperature;
 
-    temperature->ambient = _temperature.ambient;
-    temperature->temp1   = _temperature.temp1;
-    temperature->temp2   = _temperature.temp2;
-    temperature->units   = _temperature.units;
+    newTemperature = _ReadSensor();
+    if (newTemperature)
+    {
+        _temperature.ambient = Ads1118_Cj2Celsius(_rawData.cjComp);
+        _temperature.temp1 = ThermConvert_Convert(_rawData.rawAdc, _temperature.ambient, _temperature.units);
 
-    return newTemperatureAvailable;
+        temperature->ambient = _temperature.ambient;
+        temperature->temp1   = _temperature.temp1;
+        temperature->temp2   = _temperature.temp2;
+        temperature->units   = _temperature.units;
+    }
+
+    return newTemperature;
 }
 
 /** Read the thermocouple sensor and update the settings for
     the next reading */
 static bool _ReadSensor(void)
 {
-    bool success;
     uint16_t result;
+    bool success = true;
 
     success = Ads1118_Read(&result);
+
+    if (_adsConfig.sampleTemperature)
+    {
+        _rawData.cjComp = result;
+        if (++_samples >= NUM_SAMPLES)
+        {
+            _samples = 0u;
+            _adsConfig.sampleTemperature = false;
+            Ads1118_Config(&_adsConfig);
+        }
+    }
+    else
+    {
+        _rawData.rawAdc = result;
+        if (++_samples >= NUM_SAMPLES)
+        {
+            _samples = 0u;
+            _adsConfig.sampleTemperature = true;
+            Ads1118_Config(&_adsConfig);
+        }
+    }
 
     return success;
 }

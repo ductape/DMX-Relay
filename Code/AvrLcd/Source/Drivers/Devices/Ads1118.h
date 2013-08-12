@@ -80,6 +80,6 @@ void Ads1118_Config(
 
 bool Ads1118_Read(uint16_t *result);
 
-static int16_t Ads1118_Cj2Celsius(uint16_t cjTemp);
+int16_t Ads1118_Cj2Celsius(uint16_t cjTemp);
 
 #endif /* ADS1118_H_ */
