@@ -116,6 +116,12 @@
 #define BUTTON3         (1<<PINC5)
 #define READ_BUTTON3    ((PINC & BUTTON3) == false)
 
+/* LEDs */
+#define LED_0           (1<<PINB6)
+#define SET_LED_0       (PORTB |= LED_0)
+#define CLEAR_LED_0     (PORTB &= ~LED_0)
+#define TOGGLE_LED_0    (PINB = LED_0)
+
 /**** DECLARATIONS ****/
 void GpioInit(void);
 

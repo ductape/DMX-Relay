@@ -12,7 +12,7 @@
 #include "Timer.h"
 #include "PushButton.h"
 #include "Led.h"
-#include <ThermocoupleConversion.h>
+#include <ThermocoupleController.h>
 #include <LcdController.h>
 #include <Pwm.h>
 #include <string.h>
@@ -35,9 +35,13 @@
 /**** LOCAL CONSTANTS ****/
 
 /**** LOCAL VARIABLES ****/
-static Event_t _eventToProcess = {EventType_Invalid, NULL};
+static Event_t _eventToProcess =
+    {
+        .eventType = EventType_Invalid,
+        .eventCallback = NULL
+    };
 static int16_t _targetTemp = 37;
-static int16_t _actualTemperature = -37;
+static Temperature_t _temperature;
 
 /**** LOCAL FUNCTION DECLARATIONS ****/
 void _UpdateTemperature(void);
@@ -53,7 +57,6 @@ void ProcessEvents(void)
     volatile bool receivedEvent = false;
     uint8_t buttonPressed;
     uint16_t pwmDuty;
-	static int16_t adcCount = -826;
 	static int16_t EEMEM nonVolTargetTemp = 521l;
 	static uint16_t EEMEM nonVolPwmDuty = PWM_MAX_DUTY;
 	static bool everyOther40ms;
@@ -79,12 +82,6 @@ void ProcessEvents(void)
         switch(_eventToProcess.eventType)
         {
             case EventType_1s:
-				_actualTemperature = ThermConvert_Convert(adcCount++, 10, TemperatureUnit_Fahrenheit);
-				if (adcCount > 7026)
-				{
-					adcCount = -826;
-				}
-
 				/* Only update the non-volatile memory if the push buttons aren't pressed to
 				   keep from updating the memory too much */
 				if (PushButtonState() == 0)
@@ -95,6 +92,8 @@ void ProcessEvents(void)
 					pwmDuty = Pwm_GetDuty();
 					eeprom_update_word(&nonVolPwmDuty, pwmDuty);
 				}
+                ThermocoupleController_Read(&_temperature);
+                TOGGLE_THERM_SS;
                 break;
 
             case EventType_200ms:
@@ -172,7 +171,7 @@ void _UpdateTemperature(void)
     static char_t line2[LCD_COLUMNS];
 
     /* stick the temperature in a string */
-    snprintf(line1, LCD_COLUMNS, "Temp:  %5d°F", _actualTemperature);
+    snprintf(line1, LCD_COLUMNS, "T:%5d°F A:%5d°F", _temperature.temp1, _temperature.ambient);
     snprintf(line2, LCD_COLUMNS, "Target:%5d°F", _targetTemp);
 
     /* print the string */
