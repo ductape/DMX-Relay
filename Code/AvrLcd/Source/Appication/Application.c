@@ -93,7 +93,6 @@ void ProcessEvents(void)
 					eeprom_update_word(&nonVolPwmDuty, pwmDuty);
 				}
                 ThermocoupleController_Read(&_temperature);
-                TOGGLE_THERM_SS;
                 break;
 
             case EventType_200ms:
@@ -171,8 +170,8 @@ void _UpdateTemperature(void)
     static char_t line2[LCD_COLUMNS];
 
     /* stick the temperature in a string */
-    snprintf(line1, LCD_COLUMNS, "T:%5d°F A:%5d°F", _temperature.temp1, _temperature.ambient);
-    snprintf(line2, LCD_COLUMNS, "Target:%5d°F", _targetTemp);
+    snprintf(line1, LCD_COLUMNS, "T:%4d°F A:%4d°F", _temperature.temp1, _temperature.ambient);
+    snprintf(line2, LCD_COLUMNS, "Target:%4d°F", _targetTemp);
 
     /* print the string */
     success = LcdControl_SetCursorLocation(0, 0);

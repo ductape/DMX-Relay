@@ -10,6 +10,7 @@
 #include "Cpu.h"
 #include "Gpio.h"
 #include "Timer.h"
+#include "SpiMaster.h"
 #include "Startup.h"
 #include "Application.h"
 #include <LcdController.h>
@@ -27,6 +28,7 @@ int main (void)
 	CpuConfig();
 	GpioInit();
 	TimerInit();
+    SpiMaster_Init();
     Pwm_Init();
     LcdControl_Init();
 
