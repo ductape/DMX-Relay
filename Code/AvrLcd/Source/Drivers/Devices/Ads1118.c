@@ -120,6 +120,7 @@ void Ads1118_Init(void)
 void Ads1118_Config(
         const AdsConfig_t *config)
 {
+#if 0
     _configReg = 0u;
     _configReg |= ((AdsRegister)(AdsRegConfig__START_SINGLE_SHOT));
     _configReg |= ((AdsRegister)(config->inputSetting)) * AdsRegConfig_MUX0;
@@ -128,6 +129,9 @@ void Ads1118_Config(
     _configReg |= ((AdsRegister)(config->dataRate)) * AdsRegConfig_DR0;
     _configReg |= ((AdsRegister)(config->sampleTemperature)) * AdsRegConfig__TEMPERATURE_MODE;
     _configReg |= ((AdsRegister)(config->pullupEnable)) * AdsRegConfig_PULLUP_EN;
+#else
+    _configReg = (AdsRegister)((config->sampleTemperature) ? 0xBB1B : 0xBB0B);
+#endif
     (void) _WriteReg(_configReg);
 }
 

@@ -92,7 +92,6 @@ void ProcessEvents(void)
 					pwmDuty = Pwm_GetDuty();
 					eeprom_update_word(&nonVolPwmDuty, pwmDuty);
 				}
-                ThermocoupleController_Read(&_temperature);
                 break;
 
             case EventType_200ms:
@@ -108,6 +107,7 @@ void ProcessEvents(void)
 				{
 					_HandlePushButtonDown();
 				}
+                ThermocoupleController_Read(&_temperature);
 				break;
 
             case EventType_40ms:
